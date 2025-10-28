@@ -1,0 +1,9 @@
+name = "opdx-ai"
+compatibility_date = "2025-10-28"
+
+# Cloudflare Pages configuration
+pages_build_output_dir = "."
+
+[site]
+bucket = "."
+
