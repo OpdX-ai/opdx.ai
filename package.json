@@ -1,0 +1,28 @@
+{
+  "name": "opdx.ai",
+  "version": "1.0.0",
+  "description": "OPDX.ai - Where Healthcare Meets Innovation. Intelligent clinical practice management for doctors.",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "npx serve .",
+    "deploy:vercel": "npx vercel --prod",
+    "deploy:netlify": "npx netlify-cli deploy --prod --dir=.",
+    "deploy:surge": "npx surge . opdx.ai"
+  },
+  "keywords": [
+    "healthcare",
+    "clinic",
+    "doctors",
+    "medical",
+    "opdx",
+    "landing-page"
+  ],
+  "author": "OpdX-ai",
+  "license": "MIT",
+  "homepage": "https://opdx.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OpdX-ai/opdx.ai.git"
+  }
+}
+

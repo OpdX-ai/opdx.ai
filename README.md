@@ -33,60 +33,80 @@ opdx.ai/
 
 1. Clone the repository:
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/OpdX-ai/opdx.ai.git
 cd opdx.ai
 ```
 
-2. Open `index.html` in your browser:
+2. Start a local server:
 ```bash
-# On macOS
-open index.html
+# Using npm scripts
+npm run serve
 
-# On Linux
-xdg-open index.html
+# Or using Python 3
+python3 -m http.server 8000
 
-# On Windows
-start index.html
+# Or using npx directly
+npx serve .
 ```
 
-Or use a local server (recommended):
-```bash
-# Using Python 3
-python -m http.server 8000
-
-# Using Node.js (with http-server)
-npx http-server
-```
-
-Then visit `http://localhost:8000` in your browser.
+Then visit `http://localhost:3000` (or `http://localhost:8000` for Python) in your browser.
 
 ## 🌐 Deployment Options
 
-### Option 1: Netlify (Recommended)
+### Quick Deploy Commands
 
-1. Push your code to GitHub
-2. Go to [Netlify](https://netlify.com)
-3. Click "New site from Git"
-4. Select your repository
-5. Click "Deploy site"
-6. Configure your custom domain (opdx.ai) in Netlify settings
+```bash
+# Deploy to Vercel (recommended)
+npm run deploy:vercel
 
-### Option 2: Vercel
+# Deploy to Netlify
+npm run deploy:netlify
 
-1. Install Vercel CLI: `npm i -g vercel`
-2. Run `vercel` in the project directory
-3. Follow the prompts
-4. Configure your custom domain in Vercel dashboard
+# Deploy to Surge (quick hosting)
+npm run deploy:surge
+```
+
+### Option 1: Vercel (Recommended - Fast & Easy)
+
+**One-Command Deploy:**
+```bash
+npx vercel --prod
+```
+
+Or using the dashboard:
+1. Go to [Vercel](https://vercel.com/new)
+2. Import from GitHub → Select `OpdX-ai/opdx.ai`
+3. Click "Deploy"
+4. Configure your custom domain (opdx.ai) in project settings
+
+### Option 2: Netlify
+
+**One-Command Deploy:**
+```bash
+npx netlify-cli deploy --prod --dir=.
+```
+
+Or using the dashboard:
+1. Go to [Netlify](https://app.netlify.com/start)
+2. Click "Import from Git" → GitHub
+3. Select `OpdX-ai/opdx.ai` repository
+4. Click "Deploy site"
+5. Configure your custom domain (opdx.ai) in site settings
 
 ### Option 3: GitHub Pages
 
-1. Push your code to GitHub
-2. Go to repository Settings > Pages
-3. Select the branch to deploy (usually `main`)
-4. Save and wait for deployment
-5. Configure your custom domain in GitHub Pages settings
+1. Go to: https://github.com/OpdX-ai/opdx.ai/settings/pages
+2. Source: Deploy from a branch → `main` → `/root`
+3. Save and wait ~5 minutes
+4. Configure custom domain `opdx.ai`
 
-### Option 4: Traditional Hosting (cPanel, etc.)
+### Option 4: Surge (Quick Testing)
+
+```bash
+npx surge . opdx.ai
+```
+
+### Option 5: Traditional Hosting (cPanel, etc.)
 
 1. Upload all files via FTP/SFTP to your hosting provider
 2. Point your domain to the hosting server
