@@ -141,9 +141,11 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
       console.log('Content-Type:', response.headers.get('content-type'));
 
       let data;
+      let responseText: string = '';
       try {
-        const responseText = await response.text();
-        console.log('Response text (first 200 chars):', responseText.substring(0, 200));
+        responseText = await response.text();
+        console.log('Response text length:', responseText.length);
+        console.log('Response text (first 500 chars):', responseText.substring(0, 500));
         
         // Check if response is HTML (indicates routing issue)
         if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
@@ -152,19 +154,23 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
         }
         
         if (!responseText.trim()) {
-          console.error('Empty response body');
+          console.warn('Empty response body, but status is', response.status);
           // If status is 200 and body is empty, treat as success
           if (response.ok) {
+            console.log('Empty body but 200 status - treating as success');
             data = { message: 'Success' };
           } else {
             throw new Error('Empty response from server');
           }
         } else {
           data = JSON.parse(responseText);
+          console.log('Parsed JSON successfully:', data);
         }
       } catch (jsonError) {
         console.error('JSON parse error:', jsonError);
-        console.error('Response was:', responseText?.substring(0, 500) || 'empty');
+        console.error('Response text was:', responseText?.substring(0, 500) || 'empty');
+        console.error('Response status:', response.status);
+        console.error('Content-Type header:', response.headers.get('content-type'));
         // If response is not JSON, throw with the text
         throw new Error('Invalid response from server. Please try again.');
       }
