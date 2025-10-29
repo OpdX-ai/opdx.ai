@@ -3,6 +3,27 @@
  * This takes precedence over Astro API routes for Cloudflare Pages
  */
 
+// Types are available via @cloudflare/workers-types in Cloudflare runtime
+declare type KVNamespace = {
+  get(key: string): Promise<string | null>;
+  put(key: string, value: string, options?: { expirationTtl?: number }): Promise<void>;
+  delete(key: string): Promise<void>;
+};
+
+interface WaitlistEnv {
+  OPDX_WAITLIST: KVNamespace;
+  CF_TURNSTILE_SECRET: string;
+  WEBHOOK_URL?: string;
+}
+
+interface PagesFunctionContext {
+  request: Request & { cf?: { connectingIp?: string; clientAsn?: string } };
+  env: WaitlistEnv;
+  waitUntil: (promise: Promise<any>) => void;
+  passThroughOnException: () => void;
+  next: () => Promise<Response>;
+}
+
 function sanitizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
@@ -15,10 +36,7 @@ async function hashString(str: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
 }
 
-export const onRequest: PagesFunction<{
-  OPDX_WAITLIST: KVNamespace;
-  CF_TURNSTILE_SECRET: string;
-}> = async (context) => {
+export const onRequest = async (context: PagesFunctionContext) => {
   // Only handle POST requests
   if (context.request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
@@ -69,8 +87,8 @@ export const onRequest: PagesFunction<{
     }
 
     // Get request metadata
-    const cf = context.request.cf;
-    const ip = cf?.clientAsn || 'unknown';
+    const cf = (context.request as any).cf;
+    const ip = cf?.connectingIp || context.request.headers.get('cf-connecting-ip') || 'unknown';
     const ua = context.request.headers.get('user-agent') || 'unknown';
     const referer = context.request.headers.get('referer') || '';
 
