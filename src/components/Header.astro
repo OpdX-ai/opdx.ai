@@ -66,6 +66,17 @@ import { CONFIG } from '../lib/config';
     color: var(--color-primary);
     margin: 0;
     line-height: 1;
+    letter-spacing: -0.02em;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .logo-text::before {
+    content: '⚕';
+    font-size: 1.25rem;
+    color: var(--color-medical);
+    filter: drop-shadow(0 0 4px rgba(20, 184, 166, 0.3));
   }
 
   .social-nav {
@@ -87,7 +98,7 @@ import { CONFIG } from '../lib/config';
 
   .social-link:hover {
     color: var(--color-primary);
-    background-color: rgba(76, 125, 255, 0.1);
+    background-color: rgba(59, 154, 225, 0.1);
   }
 
   @media (max-width: 640px) {

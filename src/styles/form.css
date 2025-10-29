@@ -25,6 +25,7 @@
 .form-input:focus-visible {
   border-color: var(--color-primary);
   outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 154, 225, 0.1);
 }
 
 .form-input:disabled {
@@ -59,16 +60,18 @@
   padding: 1rem 2rem;
   font-size: 1rem;
   font-weight: 600;
-  background-color: var(--color-primary);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   color: white;
   border-radius: 8px;
   transition: all var(--transition-fast);
   margin-top: 1rem;
+  box-shadow: 0 4px 12px rgba(59, 154, 225, 0.2);
 }
 
 .form-submit:hover:not(:disabled) {
-  background-color: #3d6bff;
+  background: linear-gradient(135deg, #2B8ACF 0%, #4F94F0 100%);
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(59, 154, 225, 0.3);
 }
 
 .form-submit:active:not(:disabled) {
@@ -83,14 +86,15 @@
 .form-success {
   padding: 2rem;
   text-align: center;
-  background-color: rgba(34, 204, 136, 0.1);
-  border: 2px solid var(--color-accent);
+  background-color: rgba(16, 185, 129, 0.1);
+  border: 2px solid var(--color-success);
   border-radius: 8px;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
 }
 
 .success-message {
   font-size: 1.125rem;
-  color: var(--color-accent);
+  color: var(--color-success);
   font-weight: 600;
 }
 

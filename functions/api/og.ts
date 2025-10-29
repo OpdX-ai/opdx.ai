@@ -14,7 +14,7 @@ export const onRequest: PagesFunction = async () => {
     </linearGradient>
   </defs>
   <rect width="1200" height="630" fill="url(#grad)"/>
-  <text x="600" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="700" fill="#4C7DFF" text-anchor="middle">
+  <text x="600" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="700" fill="#3B9AE1" text-anchor="middle">
     OPDX.AI
   </text>
   <text x="600" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="600" fill="#EAF0FF" text-anchor="middle">

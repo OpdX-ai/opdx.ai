@@ -34,7 +34,19 @@
 
 .features-section {
   padding: 4rem 0;
-  background-color: rgba(234, 240, 255, 0.02);
+  background: linear-gradient(180deg, rgba(59, 154, 225, 0.03) 0%, transparent 100%);
+  position: relative;
+}
+
+.features-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  opacity: 0.3;
 }
 
 .features-grid {
@@ -54,6 +66,16 @@
   font-size: 1.5rem;
   color: var(--color-primary);
   margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.feature-title::before {
+  content: '✓';
+  color: var(--color-medical);
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 .feature-description {

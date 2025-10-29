@@ -3,13 +3,16 @@
  */
 
 :root {
-  --color-primary: #4C7DFF;
-  --color-accent: #22CC88;
-  --color-neutral-dark: #0E1116;
-  --color-neutral-light: #E6EAF2;
-  --color-bg: #0B0F14;
-  --color-text: #EAF0FF;
-  --color-text-muted: rgba(234, 240, 255, 0.7);
+  --color-primary: #3B9AE1;
+  --color-accent: #0D9488;
+  --color-secondary: #60A5FA;
+  --color-neutral-dark: #0F172A;
+  --color-neutral-light: #E2E8F0;
+  --color-bg: #0A1019;
+  --color-text: #F8FAFC;
+  --color-text-muted: rgba(248, 250, 252, 0.7);
+  --color-success: #10B981;
+  --color-medical: #14B8A6;
   
   --font-headline: 'Space Grotesk', 'Inter Tight', system-ui, -apple-system, sans-serif;
   --font-body: 'Inter', system-ui, -apple-system, sans-serif;
