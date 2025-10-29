@@ -1,0 +1,116 @@
+.faq-section {
+  padding: 4rem 0;
+  background: var(--color-bg);
+}
+
+.faq-section__title {
+  font-family: var(--font-headline);
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.faq-list {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faq-item {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: var(--color-bg);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.faq-item:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 2px 8px rgba(45, 108, 223, 0.1);
+}
+
+.faq-item__button {
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-headline);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  transition: background-color var(--transition-fast);
+}
+
+.faq-item__button:hover {
+  background-color: var(--color-paper);
+}
+
+.faq-item__button:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
+
+.faq-item__question {
+  flex: 1;
+}
+
+.faq-item__icon {
+  flex-shrink: 0;
+  color: var(--color-primary);
+  transition: transform var(--transition-normal);
+}
+
+.faq-item__icon--open {
+  transform: rotate(180deg);
+}
+
+.faq-item__answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height var(--transition-normal), padding var(--transition-normal);
+  padding: 0 1.5rem;
+}
+
+.faq-item__answer--open {
+  max-height: 500px;
+  padding: 0 1.5rem 1.25rem;
+}
+
+.faq-item__answer p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  margin: 0;
+  padding-top: 0.5rem;
+}
+
+@media (max-width: 640px) {
+  .faq-section {
+    padding: 3rem 0;
+  }
+
+  .faq-item__button {
+    padding: 1rem 1.25rem;
+    font-size: 0.9375rem;
+  }
+
+  .faq-item__answer {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+
+  .faq-item__answer--open {
+    padding: 0 1.25rem 1rem;
+  }
+}
+

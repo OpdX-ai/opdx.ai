@@ -1,0 +1,89 @@
+---
+interface Step {
+  title: string;
+  blurb: string;
+}
+
+interface Props {
+  steps: Step[];
+}
+
+const { steps } = Astro.props;
+---
+
+<div class="stepper">
+  {steps.map((step, index) => (
+    <div class="stepper__step">
+      <div class="stepper__number" aria-label={`Step ${index + 1}`}>
+        {index + 1}
+      </div>
+      <h3 class="stepper__title">{step.title}</h3>
+      <p class="stepper__blurb">{step.blurb}</p>
+    </div>
+  ))}
+</div>
+
+<style>
+  .stepper {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .stepper__step {
+    text-align: center;
+    position: relative;
+  }
+
+  .stepper__number {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-primary);
+    color: white;
+    border-radius: 50%;
+    font-family: var(--font-headline);
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(45, 108, 223, 0.2);
+  }
+
+  .stepper__title {
+    font-family: var(--font-headline);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.5rem;
+    line-height: 1.3;
+  }
+
+  .stepper__blurb {
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+  }
+
+  @media (max-width: 768px) {
+    .stepper {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .stepper__step {
+      position: relative;
+      padding-left: 4rem;
+      text-align: left;
+    }
+
+    .stepper__number {
+      position: absolute;
+      left: 0;
+    }
+  }
+</style>
+

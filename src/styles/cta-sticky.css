@@ -1,0 +1,56 @@
+.cta-sticky {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 1rem;
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+  animation: slideUp 0.2s ease-out;
+}
+
+@media (min-width: 769px) {
+  .cta-sticky {
+    display: none;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.cta-sticky__button {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--color-primary);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(45, 108, 223, 0.3);
+  transition: all var(--transition-fast);
+}
+
+.cta-sticky__button:hover {
+  background: #2563db;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(45, 108, 223, 0.4);
+}
+
+.cta-sticky__button:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-sticky {
+    animation: none;
+  }
+}
+

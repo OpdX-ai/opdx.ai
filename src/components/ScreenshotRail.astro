@@ -1,0 +1,95 @@
+---
+interface Props {
+  screenshots?: Array<{ src: string; alt: string }>;
+}
+
+const { screenshots = [] } = Astro.props;
+
+// Placeholder images for MVP - can be replaced with actual screenshots
+// Using data URIs for now - replace with actual image paths later
+const defaultScreenshots = [
+  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5DYWxlbmRhciAmIFF1ZXVlPC90ZXh0Pjwvc3ZnPg==', alt: 'Calendar and Queue view' },
+  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5WaXNpdCBTaGVldDwvdGV4dD48L3N2Zz4=', alt: 'Visit Sheet' },
+  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5SeCBQREY8L3RleHQ+PC9zdmc+', alt: 'Prescription PDF' },
+  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5VUEkgUGF5bWVudDwvdGV4dD48L3N2Zz4=', alt: 'UPI payment flow' },
+  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5XaGF0c0FwcCBSZW1pbmRlcjwvdGV4dD48L3N2Zz4=', alt: 'WhatsApp reminder preview' },
+];
+
+const images = screenshots.length > 0 ? screenshots : defaultScreenshots;
+---
+
+<section class="screenshot-rail" aria-labelledby="screenshot-heading">
+  <div class="container">
+    <h2 id="screenshot-heading" class="screenshot-rail__title">In the clinic</h2>
+    <div class="screenshot-rail__grid">
+      {images.map((img) => (
+        <div class="screenshot-rail__item">
+          <img
+            src={img.src}
+            alt={img.alt}
+            loading="lazy"
+            width="400"
+            height="300"
+            class="screenshot-rail__image"
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .screenshot-rail {
+    padding: 4rem 0;
+    background: var(--color-bg);
+  }
+
+  .screenshot-rail__title {
+    font-family: var(--font-headline);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .screenshot-rail__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .screenshot-rail__item {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    background: var(--color-paper);
+    transition: all var(--transition-fast);
+  }
+
+  .screenshot-rail__item:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(45, 108, 223, 0.15);
+  }
+
+  .screenshot-rail__image {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+
+  @media (max-width: 640px) {
+    .screenshot-rail {
+      padding: 3rem 0;
+    }
+
+    .screenshot-rail__grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+  }
+</style>
+

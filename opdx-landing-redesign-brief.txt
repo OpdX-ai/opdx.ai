@@ -1,0 +1,202 @@
+OPDX.AI — Landing Page Redesign Brief (Clinic/OPD Platform)
+
+Owner: PM → For: Software Architect & UI/UX Designer
+Status: Countdown + Email capture already implemented. This brief focuses on CONTENT, IA, COMPONENTS, and VISUAL REDESIGN for a clinic/OPD doctor platform.
+
+0) North Star
+We’re building a platform that streamlines clinic operations for OPD doctors: appointments, queue, OPD notes, prescriptions, billing, and follow-ups. The landing page must speak to single- and multi-doctor clinics in India (front-desk heavy), be fast, trustworthy, and conversion-oriented.
+
+1) Primary Goals
+- Convey value to clinic owners and doctors in 10 seconds.
+- Drive waitlist sign-ups (existing email form) and demo requests (secondary CTA).
+- Be India-first: UPI flows, WhatsApp reminders, GST invoicing, DPDP-aware privacy stance.
+- Keep it light: quirky but professional. Avoid stock-photo clichés; prefer clean, abstract visuals.
+
+2) Brand Voice & Quirky Message (choose 1 headline + 1 subhead)
+Headline options (quirky, doctor-aware):
+- “Less waiting, more healing. Your OPD deserves a brain upgrade.”
+- “We cured appointment chaos. Side effects include happier front desks.”
+- “Clipboard to cloud—without the drama.”
+- “Your queue will feel shorter. Your day will feel longer.”
+- “Practice medicine, not spreadsheets.”
+
+Subheadline options (benefit-first):
+- “OPDX.AI streamlines appointments, queue, OPD notes, prescriptions, and payments—built for Indian clinics.”
+- “Powerful clinic operations in one clean console: bookings, tokens, Rx, UPI billing, WhatsApp reminders.”
+- “Run your OPD like clockwork—bookings, visits, prescriptions, and GST bills, all in one place.”
+
+Hero micro-copy (supporting line near CTAs):
+- “HIPAA-lite mindset, DPDP-aware. Your data, your clinic.”
+- “Install-free for patients. PWA-ready portal.”
+
+3) IA (Information Architecture)
+Above the fold (keep countdown + email form intact):
+- Logo/Wordmark (temporary acceptable)
+- Headline + Subheadline (from #2)
+- Countdown timer (already built)
+- Primary CTA: “Join the Waitlist” (existing) + Secondary CTA: “See a 2‑minute demo” (links to hosted video later; placeholder now)
+
+Below the fold sections (order intentional):
+A. “Who it’s for”
+- Copy: Single-doctor clinics • Multi-doctor polyclinics • Specialty OPDs (pediatrics, gynae, ortho, dental GP) • Front-desk teams
+- 3 small cards with micro-benfits per persona.
+
+B. “What you get” (Feature value grid: 2 columns × 4–6 items)
+- Appointments & token queue — “Cut no-shows, keep the flow.”
+- OPD notes & prescriptions — “Templates + dose shorthand like 1‑0‑1 ×5d.”
+- Patient 360 — “History, vitals, allergies in one view.”
+- UPI/Cards billing with GST — “Receipts that your CA won’t frown at.”
+- WhatsApp reminders — “Reduce misses, increase follow-ups.”
+- Reports — “Daily settlements, referral tracking, GST summary.”
+
+C. “How it works” (3 steps, simple icons)
+1) “Set up your clinic” → hours, fee, staff.
+2) “Run your day” → bookings, queue, visits, Rx, payments.
+3) “Close and grow” → settlements, reminders, insights.
+
+D. “Trust, Privacy & Compliance” (India-first)
+- DPDP-aligned practices: explicit consent, purpose-limited use, export/delete on request.
+- Data security: encryption at rest, TLS in transit, role-based access, audit logs.
+- Uptime & reliability: Cloudflare edge, R2 object storage, backups.
+
+E. “In the clinic” (visual story strip)
+- Small screenshots/illustrations placeholders: Calendar & Queue, Visit Sheet, Rx PDF, UPI payment, WhatsApp reminder preview.
+
+F. “Pricing teaser” (no hard prices yet)
+- “Pilot clinics get early-bird pricing.”
+- “Simple per-doctor plan, volume-friendly.”
+- “Transparent. No lock-in.” (Link to mailto: hello@opdx.ai)
+
+G. “FAQ” (starter list; expandable accordions)
+- Is this ABDM/NDHM-ready? → “We’re adapter-ready; integration roadmap is public.”
+- Can I use it without changing my phone number? → “Yes, WhatsApp via BSP templates.”
+- How hard is migration? → “CSV import for patients; we’ll help.”
+- Where is data stored? → “On the cloud with encryption; you own your data.”
+
+H. Footer
+- Contact • Privacy • Terms • Minimal social links
+- Clinic-friendly footer line: “© 2025 OPDX.AI — Built for Indian clinics.”
+
+4) Visual System
+- Palette (professional with a calm clinical base):
+  Primary: #2D6CDF (clinic blue) | Mint: #22CC88 | Ink: #0D1117 | Paper: #F7FAFF | Accents: #F59E0B (alerts), #EF4444 (critical).
+- Typography: Space Grotesk (headlines), Inter (body); minimum size 16px; fluid scaling.
+- Imagery: Prefer light, abstract UI shapes and subtle line illustrations over literal people photos.
+- Motion: Micro only (fade/slide 120–160ms). Respect reduced-motion.
+- Accessibility: WCAG 2.2 AA, contrast ≥ 4.5:1, visible focus, full keyboard nav.
+
+5) Components (to redesign or add)
+- HeroBlock (takes countdown + email slot)
+- FeatureCard (icon + title + 2-line blurb)
+- PersonaCard (role + key win)
+- Stepper3 (iconic 3-step “How it works”)
+- TrustStrip (security badges/icons + DPDP text)
+- ScreenshotRail (carousel-ready but static MVP)
+- FAQAccordion
+- FooterMinimal
+- CTASticky (mobile: small ribbon “Join the waitlist”)
+
+6) Copy Blocks (drop-in text; can be edited)
+- Badge (top): “Built for Indian clinics” / “DPDP-aware”
+- Hero headline/subheadline: pick from #2
+- Feature blurbs (examples):
+  • “Appointments & Queue: Confirmations, no-show nudges, ‘Now Serving’ screen.”
+  • “OPD Notes & Rx: Templates, ICD-10-ready, QR‑verified e‑prescriptions.”
+  • “Payments & GST: UPI, card, cash—with clean invoices and day close.”
+  • “Patient 360: Allergies, history, vitals, documents—right where you need them.”
+  • “Reminders: WhatsApp/SMS nudges to reduce misses and increase returns.”
+  • “Reports: Collections by mode, top diagnoses, referral flows, GST summary.”
+- Trust copy:
+  “Your clinic’s data stays yours. Encryption at rest and in transit, strict role-based access, and an audit trail on every change.”
+- CTA buttons:
+  Primary: “Join the Waitlist” (existing) | Secondary: “See a 2‑minute demo”
+- Footer note:
+  “© 2025 OPDX.AI — Less admin. More medicine.”
+
+7) Content Config (JSON example for CMS-less editing)
+{
+  "hero": {
+    "badge": "Built for Indian clinics",
+    "headline": "We cured appointment chaos. Side effects include happier front desks.",
+    "subhead": "Bookings, queue, OPD notes, prescriptions, UPI billing and WhatsApp reminders—made for OPDs.",
+    "primaryCta": "Join the Waitlist",
+    "secondaryCta": "See a 2‑minute demo"
+  },
+  "personas": [
+    {"title": "Doctor", "blurb": "Finish visits faster. Print Rx with QR in one click."},
+    {"title": "Front Desk", "blurb": "Manage tokens, reduce no‑shows, close the day cleanly."},
+    {"title": "Owner", "blurb": "Track revenue, GST, and referrals without spreadsheets."}
+  ],
+  "features": [
+    {"title": "Appointments & Queue", "blurb": "Confirmations, no‑show nudges, ‘Now Serving’ screen."},
+    {"title": "OPD Notes & Rx", "blurb": "Templates, dose shorthand, QR‑verified e‑prescriptions."},
+    {"title": "Patient 360", "blurb": "Allergies, history, vitals, and documents at a glance."},
+    {"title": "Payments & GST", "blurb": "UPI, cards, receipts, and day‑close reconciliation."},
+    {"title": "Reminders", "blurb": "WhatsApp and SMS nudges for follow‑ups."},
+    {"title": "Reports", "blurb": "Collections by mode, diagnoses, referrals, GST summary."}
+  ],
+  "howItWorks": [
+    {"title": "Set up your clinic", "blurb": "Hours, fees, staff, and templates."},
+    {"title": "Run your day", "blurb": "Bookings, queue, visits, Rx, and payments."},
+    {"title": "Close & grow", "blurb": "Settlements, reminders, and insights."}
+  ],
+  "trust": {
+    "points": [
+      "DPDP‑aware data handling and explicit consent flows.",
+      "Encryption at rest and in transit; role‑based access.",
+      "Cloudflare edge reliability; backups and audit logs."
+    ]
+  },
+  "pricingTeaser": [
+    "Pilot clinics get early‑bird pricing.",
+    "Simple per‑doctor plan, volume‑friendly.",
+    "Transparent. No lock‑in."
+  ],
+  "faq": [
+    {"q": "Is this ABDM/NDHM‑ready?", "a": "Adapter‑ready; integration roadmap is public."},
+    {"q": "Do I need a new WhatsApp number?", "a": "No. We support BSP templates with your existing number."},
+    {"q": "How hard is migration?", "a": "Patient CSV import; we’ll help with setup."},
+    {"q": "Where is data stored?", "a": "Cloud with encryption; export or delete on request."}
+  ],
+  "footer": {
+    "contact": "hello@opdx.ai",
+    "note": "© 2025 OPDX.AI — Less admin. More medicine."
+  }
+}
+
+8) SEO & Social
+- Title: “OPDX.AI — Clinic & OPD Platform for Indian Doctors”
+- Meta description: “Run your OPD like clockwork—appointments, queue, OPD notes, prescriptions, UPI billing, and WhatsApp reminders. Built for Indian clinics.”
+- OG image: render a branded card with headline + date; show clinic icons (calendar, Rx, UPI, WhatsApp). 1200×630.
+- Robots: allow indexing when LAUNCH_READY=true.
+- Canonical: https://opdx.ai/
+
+9) Performance & Accessibility Requirements
+- Mobile Lighthouse ≥ 90 across categories.
+- ≤ 80KB JS on landing; images AVIF/SVG; width/height set; lazy load below the fold.
+- Keyboard-only nav end-to-end; focus visible; skip-to-content link.
+- Announce FAQ open/close states to screen readers.
+
+10) Acceptance Criteria (for redesign)
+- Above-the-fold communicates core value in ≤ 10 seconds.
+- 2 clear CTAs: Waitlist (existing) + Demo (placeholder link).
+- Feature grid + How-it-works + Trust strip render cleanly on mobile.
+- ScreenshotRail accepts 4–6 static images; safe fallbacks when empty.
+- JSON config (see #7) can swap all copy without code changes.
+- OG image endpoint updated for clinic visuals.
+- Footer includes Privacy/Terms/Contact.
+
+11) Optional A/B Test Ideas (copy-only)
+- Headline variant test (from #2).
+- Persona emphasis: Doctor-first vs Owner-first.
+- Secondary CTA: “Book a call” vs “See a 2‑minute demo”.
+
+12) Deliverables
+- Updated hero + sections per IA above.
+- JSON content file with copy from #7.
+- Revised OG image card.
+- Screenshot placeholders (use generic UI frames).
+- Lighthouse report (mobile + desktop).
+
+Implementation note
+Keep existing countdown and email capture intact; wire new sections below the fold. Treat this as CMS-less: read copy from a JSON file. Build once; iterate copy quickly.

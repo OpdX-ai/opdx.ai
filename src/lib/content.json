@@ -1,0 +1,102 @@
+{
+  "hero": {
+    "badge": "Built for Indian clinics",
+    "headline": "We cured appointment chaos. Side effects include happier front desks.",
+    "subhead": "Bookings, queue, OPD notes, prescriptions, UPI billing and WhatsApp reminders—made for OPDs.",
+    "primaryCta": "Join the Waitlist",
+    "secondaryCta": "See a 2‑minute demo",
+    "microCopy": [
+      "HIPAA-lite mindset, DPDP-aware. Your data, your clinic.",
+      "Install-free for patients. PWA-ready portal."
+    ]
+  },
+  "personas": [
+    {
+      "title": "Doctor",
+      "blurb": "Finish visits faster. Print Rx with QR in one click."
+    },
+    {
+      "title": "Front Desk",
+      "blurb": "Manage tokens, reduce no‑shows, close the day cleanly."
+    },
+    {
+      "title": "Owner",
+      "blurb": "Track revenue, GST, and referrals without spreadsheets."
+    }
+  ],
+  "features": [
+    {
+      "title": "Appointments & Queue",
+      "blurb": "Confirmations, no‑show nudges, 'Now Serving' screen."
+    },
+    {
+      "title": "OPD Notes & Rx",
+      "blurb": "Templates, dose shorthand, QR‑verified e‑prescriptions."
+    },
+    {
+      "title": "Patient 360",
+      "blurb": "Allergies, history, vitals, and documents at a glance."
+    },
+    {
+      "title": "Payments & GST",
+      "blurb": "UPI, cards, receipts, and day‑close reconciliation."
+    },
+    {
+      "title": "Reminders",
+      "blurb": "WhatsApp and SMS nudges for follow‑ups."
+    },
+    {
+      "title": "Reports",
+      "blurb": "Collections by mode, diagnoses, referrals, GST summary."
+    }
+  ],
+  "howItWorks": [
+    {
+      "title": "Set up your clinic",
+      "blurb": "Hours, fees, staff, and templates."
+    },
+    {
+      "title": "Run your day",
+      "blurb": "Bookings, queue, visits, Rx, and payments."
+    },
+    {
+      "title": "Close & grow",
+      "blurb": "Settlements, reminders, and insights."
+    }
+  ],
+  "trust": {
+    "points": [
+      "DPDP‑aware data handling and explicit consent flows.",
+      "Encryption at rest and in transit; role‑based access.",
+      "Cloudflare edge reliability; backups and audit logs."
+    ]
+  },
+  "pricingTeaser": [
+    "Pilot clinics get early‑bird pricing.",
+    "Simple per‑doctor plan, volume‑friendly.",
+    "Transparent. No lock‑in."
+  ],
+  "faq": [
+    {
+      "q": "Is this ABDM/NDHM‑ready?",
+      "a": "Adapter‑ready; integration roadmap is public."
+    },
+    {
+      "q": "Do I need a new WhatsApp number?",
+      "a": "No. We support BSP templates with your existing number."
+    },
+    {
+      "q": "How hard is migration?",
+      "a": "Patient CSV import; we'll help with setup."
+    },
+    {
+      "q": "Where is data stored?",
+      "a": "Cloud with encryption; export or delete on request."
+    }
+  ],
+  "footer": {
+    "contact": "hello@opdx.ai",
+    "note": "© 2025 OPDX.AI — Less admin. More medicine."
+  }
+}
+

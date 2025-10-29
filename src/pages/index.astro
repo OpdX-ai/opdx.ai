@@ -4,19 +4,35 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import CountdownIsland from '../components/CountdownIsland';
 import EmailForm from '../components/EmailForm';
-import CalendarLinks from '../components/CalendarLinks.astro';
+import FeatureCard from '../components/FeatureCard.astro';
+import PersonaCard from '../components/PersonaCard.astro';
+import Stepper3 from '../components/Stepper3.astro';
+import TrustStrip from '../components/TrustStrip.astro';
+import ScreenshotRail from '../components/ScreenshotRail.astro';
+import FAQAccordion from '../components/FAQAccordion';
+import CTASticky from '../components/CTASticky';
 import { CONFIG } from '../lib/config';
 import '../styles/home.css';
+
+const content = CONFIG.content;
 ---
 
-<BaseLayout>
+<BaseLayout
+  title="OPDX.AI — Clinic & OPD Platform for Indian Doctors"
+  description="Run your OPD like clockwork—appointments, queue, OPD notes, prescriptions, UPI billing, and WhatsApp reminders. Built for Indian clinics."
+>
+  <a href="#main-content" class="skip-to-content">Skip to content</a>
+  
   <Header />
   
-  <main class="hero-section">
+  <main id="main-content" class="hero-section">
     <div class="container">
       <div class="hero-content">
-        <h2 class="hero-headline">{CONFIG.headline}</h2>
-        <p class="hero-subheadline">{CONFIG.subHeadline}</p>
+        {content.hero.badge && (
+          <span class="hero-badge">{content.hero.badge}</span>
+        )}
+        <h1 class="hero-headline">{content.hero.headline}</h1>
+        <p class="hero-subheadline">{content.hero.subhead}</p>
         
         <CountdownIsland 
           client:load
@@ -29,39 +45,90 @@ import '../styles/home.css';
             <EmailForm
               client:load
               turnstileSiteKey={CONFIG.turnstileSiteKey}
-              primaryCta={CONFIG.ctaPrimary}
+              primaryCta={content.hero.primaryCta}
               successMessage={CONFIG.ctaSuccess}
             />
-            <CalendarLinks />
+            <a href={`mailto:${content.footer.contact}?subject=Demo Request`} class="cta-secondary">
+              {content.hero.secondaryCta}
+            </a>
+            {content.hero.microCopy && content.hero.microCopy.length > 0 && (
+              <div class="hero-microcopy">
+                {content.hero.microCopy.map((line) => (
+                  <p>{line}</p>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
     </div>
   </main>
-  
-  <section class="features-section">
+
+  <!-- Section A: Who it's for -->
+  <section class="personas-section" aria-labelledby="personas-heading">
     <div class="container">
-      <div class="features-grid">
-        <div class="feature-item">
-          <h3 class="feature-title">Appointment Booking</h3>
-          <p class="feature-description">Streamline scheduling with automated booking and patient management.</p>
-        </div>
-        <div class="feature-item">
-          <h3 class="feature-title">Patient Records</h3>
-          <p class="feature-description">Secure, digital patient records accessible anytime, anywhere.</p>
-        </div>
-        <div class="feature-item">
-          <h3 class="feature-title">Payment Processing</h3>
-          <p class="feature-description">Integrated payment solutions for seamless transactions.</p>
-        </div>
-        <div class="feature-item">
-          <h3 class="feature-title">OPD Operations</h3>
-          <p class="feature-description">Complete OPD management to reduce administrative burden.</p>
-        </div>
+      <h2 id="personas-heading" class="section-title">Who it's for</h2>
+      <p class="section-subtitle">Single-doctor clinics • Multi-doctor polyclinics • Specialty OPDs (pediatrics, gynae, ortho, dental GP) • Front-desk teams</p>
+      <div class="personas-grid">
+        {content.personas.map((persona) => (
+          <PersonaCard title={persona.title} blurb={persona.blurb} />
+        ))}
       </div>
     </div>
   </section>
-  
-  <Footer />
-</BaseLayout>
 
+  <!-- Section B: What you get -->
+  <section class="features-section" aria-labelledby="features-heading">
+    <div class="container">
+      <h2 id="features-heading" class="section-title">What you get</h2>
+      <div class="features-grid">
+        {content.features.map((feature) => (
+          <FeatureCard title={feature.title} blurb={feature.blurb} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Section C: How it works -->
+  <section class="how-it-works-section" aria-labelledby="how-it-works-heading">
+    <div class="container">
+      <h2 id="how-it-works-heading" class="section-title">How it works</h2>
+      <Stepper3 steps={content.howItWorks} />
+    </div>
+  </section>
+
+  <!-- Section D: Trust, Privacy & Compliance -->
+  <TrustStrip points={content.trust.points} />
+
+  <!-- Section E: In the clinic -->
+  <ScreenshotRail />
+
+  <!-- Section F: Pricing teaser -->
+  <section class="pricing-section" aria-labelledby="pricing-heading">
+    <div class="container">
+      <h2 id="pricing-heading" class="section-title">Pricing</h2>
+      <div class="pricing-content">
+        {content.pricingTeaser.map((line) => (
+          <p class="pricing-line">{line}</p>
+        ))}
+        <a href={`mailto:${content.footer.contact}?subject=Pricing Inquiry`} class="pricing-cta">
+          Contact us for pricing
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section G: FAQ -->
+  <FAQAccordion client:load items={content.faq} />
+
+  <!-- Section H: Footer -->
+  <Footer />
+
+  <!-- Mobile sticky CTA -->
+  {CONFIG.ENABLE_WAITLIST && (
+    <CTASticky 
+      client:load
+      label={content.hero.primaryCta}
+    />
+  )}
+</BaseLayout>
