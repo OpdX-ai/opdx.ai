@@ -4,36 +4,105 @@
  */
 
 import type { APIRoute } from 'astro';
+import { isValidEmail, sanitizeEmail, hashString } from '../../lib/validators';
 
-function sanitizeEmail(email: string): string {
-  return email.trim().toLowerCase();
-}
-
-async function hashString(str: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(str);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
+// Security headers for all responses
+function getSecurityHeaders(): Record<string, string> {
+  return {
+    'Content-Type': 'application/json',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+  };
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  try {
-    const { email, token } = await request.json();
+  // Validate Content-Type
+  const contentType = request.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    return new Response(JSON.stringify({ error: 'Invalid content type' }), {
+      status: 415,
+      headers: getSecurityHeaders(),
+    });
+  }
 
-    if (!email || !token) {
-      return new Response(JSON.stringify({ error: 'Email and token required' }), {
+  try {
+    // Parse JSON with explicit error handling
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getSecurityHeaders(),
       });
     }
 
-    const sanitizedEmail = sanitizeEmail(email);
+    const { email, token } = body;
+
+    // Validate input presence and types
+    if (!email || !token) {
+      return new Response(JSON.stringify({ error: 'Email and token required' }), {
+        status: 400,
+        headers: getSecurityHeaders(),
+      });
+    }
+
+    // Validate input types and lengths
+    if (typeof email !== 'string' || email.length < 3 || email.length > 254) {
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+        status: 400,
+        headers: getSecurityHeaders(),
+      });
+    }
+
+    if (typeof token !== 'string' || token.length > 2048) {
+      return new Response(JSON.stringify({ error: 'Invalid token' }), {
+        status: 400,
+        headers: getSecurityHeaders(),
+      });
+    }
+
+    const sanitizedEmailValue = sanitizeEmail(email);
+
+    // Validate email format
+    if (!isValidEmail(sanitizedEmailValue)) {
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+        status: 400,
+        headers: getSecurityHeaders(),
+      });
+    }
 
     // Get environment variables - check both runtime and import.meta.env
     const runtimeEnv = (locals.runtime as any)?.env;
     const turnstileSecret = runtimeEnv?.CF_TURNSTILE_SECRET || import.meta.env.CF_TURNSTILE_SECRET;
     const kvNamespace = runtimeEnv?.OPDX_WAITLIST;
+
+    // Rate limiting - prevent abuse (if KV is available)
+    const ip = request.headers.get('cf-connecting-ip') || 
+               request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+               'unknown';
+    
+    if (kvNamespace && ip !== 'unknown') {
+      const rateLimitKey = `ratelimit:${ip}`;
+      const rateLimitData = await kvNamespace.get(rateLimitKey);
+      
+      if (rateLimitData) {
+        const attempts = parseInt(rateLimitData, 10);
+        if (attempts >= 5) { // Max 5 attempts per hour per IP
+          return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+            status: 429,
+            headers: {
+              ...getSecurityHeaders(),
+              'Retry-After': '3600',
+            },
+          });
+        }
+        await kvNamespace.put(rateLimitKey, (attempts + 1).toString(), { expirationTtl: 3600 });
+      } else {
+        await kvNamespace.put(rateLimitKey, '1', { expirationTtl: 3600 });
+      }
+    }
 
     // Verify Turnstile token
     if (turnstileSecret) {
@@ -44,16 +113,21 @@ export const POST: APIRoute = async ({ request, locals }) => {
         body: JSON.stringify({
           secret: turnstileSecret,
           response: token,
+          ...(ip !== 'unknown' && { remoteip: ip }),
         }),
       });
 
       const verifyData = await verifyResponse.json();
 
       if (!verifyData.success) {
-        console.error('Turnstile verification failed:', verifyData);
+        // Log only non-sensitive error info
+        console.error('Turnstile verification failed:', {
+          success: verifyData.success,
+          'error-codes': verifyData['error-codes'],
+        });
         return new Response(JSON.stringify({ error: 'Verification failed' }), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: getSecurityHeaders(),
         });
       }
     } else {
@@ -69,24 +143,24 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Check if email already exists (if KV is available)
     if (kvNamespace) {
-      const existing = await kvNamespace.get(`email:${sanitizedEmail}`);
+      const existing = await kvNamespace.get(`email:${sanitizedEmailValue}`);
       if (existing) {
         return new Response(JSON.stringify({ message: 'Already subscribed', duplicate: true }), {
           status: 200,
-          headers: { 'Content-Type': 'application/json' },
+          headers: getSecurityHeaders(),
         });
       }
 
       // Store in KV
       const entry = {
-        email: sanitizedEmail,
+        email: sanitizedEmailValue,
         ts: Date.now(),
         uaHash,
         referer,
         consent: true,
       };
 
-      await kvNamespace.put(`email:${sanitizedEmail}`, JSON.stringify(entry));
+      await kvNamespace.put(`email:${sanitizedEmailValue}`, JSON.stringify(entry));
     } else {
       console.warn('KV namespace not available - email not stored. This is OK in local dev.');
       // In development without KV, we can still return success
@@ -100,23 +174,22 @@ export const POST: APIRoute = async ({ request, locals }) => {
         await fetch(webhookUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: sanitizedEmail, timestamp: Date.now() }),
+          body: JSON.stringify({ email: sanitizedEmailValue, timestamp: Date.now() }),
         });
       } catch (err) {
-        console.error('Webhook error:', err);
+        console.error('Webhook error:', err instanceof Error ? err.message : 'Unknown error');
       }
     }
 
     return new Response(JSON.stringify({ message: 'Success' }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getSecurityHeaders(),
     });
   } catch (error) {
-    console.error('Waitlist API error:', error);
+    console.error('Waitlist API error:', error instanceof Error ? error.message : 'Unknown error');
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getSecurityHeaders(),
     });
   }
 };
-

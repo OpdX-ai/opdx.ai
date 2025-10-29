@@ -24,8 +24,15 @@ interface PagesFunctionContext {
   next: () => Promise<Response>;
 }
 
+// Validation utilities
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function sanitizeEmail(email: string): string {
   return email.trim().toLowerCase();
+}
+
+function isValidEmail(email: string): boolean {
+  return EMAIL_REGEX.test(email.trim());
 }
 
 async function hashString(str: string): Promise<string> {
@@ -36,29 +43,109 @@ async function hashString(str: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
 }
 
+// Security headers for all responses
+function getSecurityHeaders(): Record<string, string> {
+  return {
+    'Content-Type': 'application/json',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+  };
+}
+
 export const onRequest = async (context: PagesFunctionContext) => {
   // Only handle POST requests
   if (context.request.method !== 'POST') {
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
       headers: { 
-        'Content-Type': 'application/json',
+        ...getSecurityHeaders(),
         'Allow': 'POST'
       },
     });
   }
 
-  try {
-    const { email, token } = await context.request.json();
+  // Validate Content-Type
+  const contentType = context.request.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    return new Response(JSON.stringify({ error: 'Invalid content type' }), {
+      status: 415,
+      headers: getSecurityHeaders(),
+    });
+  }
 
+  try {
+    // Parse JSON with explicit error handling
+    let body;
+    try {
+      body = await context.request.json();
+    } catch (parseError) {
+      return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
+        status: 400,
+        headers: getSecurityHeaders(),
+      });
+    }
+
+    const { email, token } = body;
+
+    // Validate input presence and types
     if (!email || !token) {
       return new Response(JSON.stringify({ error: 'Email and token required' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: getSecurityHeaders(),
+      });
+    }
+
+    // Validate input types and lengths
+    if (typeof email !== 'string' || email.length < 3 || email.length > 254) {
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+        status: 400,
+        headers: getSecurityHeaders(),
+      });
+    }
+
+    if (typeof token !== 'string' || token.length > 2048) {
+      return new Response(JSON.stringify({ error: 'Invalid token' }), {
+        status: 400,
+        headers: getSecurityHeaders(),
       });
     }
 
     const sanitizedEmail = sanitizeEmail(email);
+
+    // Validate email format
+    if (!isValidEmail(sanitizedEmail)) {
+      return new Response(JSON.stringify({ error: 'Invalid email format' }), {
+        status: 400,
+        headers: getSecurityHeaders(),
+      });
+    }
+
+    // Get IP address for rate limiting and Turnstile verification
+    const cf = (context.request as any).cf;
+    const ip = cf?.connectingIp || context.request.headers.get('cf-connecting-ip') || 'unknown';
+
+    // Rate limiting - prevent abuse (before Turnstile verification to save API calls)
+    if (context.env.OPDX_WAITLIST && ip !== 'unknown') {
+      const rateLimitKey = `ratelimit:${ip}`;
+      const rateLimitData = await context.env.OPDX_WAITLIST.get(rateLimitKey);
+      
+      if (rateLimitData) {
+        const attempts = parseInt(rateLimitData, 10);
+        if (attempts >= 5) { // Max 5 attempts per hour per IP
+          return new Response(JSON.stringify({ error: 'Too many requests. Please try again later.' }), {
+            status: 429,
+            headers: {
+              ...getSecurityHeaders(),
+              'Retry-After': '3600',
+            },
+          });
+        }
+        await context.env.OPDX_WAITLIST.put(rateLimitKey, (attempts + 1).toString(), { expirationTtl: 3600 });
+      } else {
+        await context.env.OPDX_WAITLIST.put(rateLimitKey, '1', { expirationTtl: 3600 });
+      }
+    }
 
     // Verify Turnstile token
     const turnstileSecret = context.env.CF_TURNSTILE_SECRET;
@@ -70,16 +157,21 @@ export const onRequest = async (context: PagesFunctionContext) => {
         body: JSON.stringify({
           secret: turnstileSecret,
           response: token,
+          ...(ip !== 'unknown' && { remoteip: ip }),
         }),
       });
 
       const verifyData = await verifyResponse.json();
 
       if (!verifyData.success) {
-        console.error('Turnstile verification failed:', verifyData);
+        // Log only non-sensitive error info
+        console.error('Turnstile verification failed:', {
+          success: verifyData.success,
+          'error-codes': verifyData['error-codes'],
+        });
         return new Response(JSON.stringify({ error: 'Verification failed' }), {
           status: 400,
-          headers: { 'Content-Type': 'application/json' },
+          headers: getSecurityHeaders(),
         });
       }
     } else {
@@ -87,8 +179,6 @@ export const onRequest = async (context: PagesFunctionContext) => {
     }
 
     // Get request metadata
-    const cf = (context.request as any).cf;
-    const ip = cf?.connectingIp || context.request.headers.get('cf-connecting-ip') || 'unknown';
     const ua = context.request.headers.get('user-agent') || 'unknown';
     const referer = context.request.headers.get('referer') || '';
 
@@ -102,7 +192,7 @@ export const onRequest = async (context: PagesFunctionContext) => {
       if (existing) {
         return new Response(JSON.stringify({ message: 'Already subscribed', duplicate: true }), {
           status: 200,
-          headers: { 'Content-Type': 'application/json' },
+          headers: getSecurityHeaders(),
         });
       }
 
@@ -137,13 +227,13 @@ export const onRequest = async (context: PagesFunctionContext) => {
 
     return new Response(JSON.stringify({ message: 'Success' }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getSecurityHeaders(),
     });
   } catch (error) {
-    console.error('Waitlist API error:', error);
+    console.error('Waitlist API error:', error instanceof Error ? error.message : 'Unknown error');
     return new Response(JSON.stringify({ error: 'Internal server error' }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getSecurityHeaders(),
     });
   }
 };
