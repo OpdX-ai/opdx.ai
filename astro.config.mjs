@@ -9,7 +9,7 @@ export default defineConfig({
   vite: {
     build: {
       cssMinify: true,
-      minify: 'terser',
+      minify: 'esbuild',
     },
   },
 });
