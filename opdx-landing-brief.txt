@@ -1,0 +1,187 @@
+Prompt for Architect — OPDX.AI “Launching Soon” Landing Page
+
+0) Context & Objective
+- Domain: OPDX.AI (on Cloudflare).
+- Goal: Ship a high-performance “Launching Soon” page with a quirky headline and a countdown timer to launch.
+- Launch Date/Time (source of truth): December 4, 2025, 10:00 IST (Asia/Kolkata, UTC+05:30).
+  - Timer must be timezone-correct and show visitor-local remaining time.
+- Logo: Not available yet. Provide graceful fallbacks and an easy swap-in path for the final asset.
+- KPI (phase 0): Lighthouse ≥ 95 (Performance/Best Practices/SEO/Accessibility), TTI < 2s on 3G Fast, CLS < 0.02, JS ≤ 50KB gzipped.
+
+1) Technical Approach (proposed)
+Hosting: Cloudflare Pages.
+Edge runtime & integrations: Cloudflare Workers (for minimal serverless logic) + KV for waitlist storage.
+Stack (pick one):
+1) Astro (preferred) + Islands for the countdown + minimal hydration, or
+2) Next.js (App Router) targeting Cloudflare Pages Functions.
+Pick (1) unless you see a blocker; page is mostly static and Astro minimizes client JS.
+
+Why: Static-first rendering for max speed; tiny interactive island for the timer; Cloudflare-native infra for low latency; KV for simple, durable edge storage of emails.
+
+2) Page Structure & Content
+
+2.1 Anatomy
+- Top Bar / Header
+  - Left: Temporary wordmark “OPDX.AI” (text; see Branding below).
+  - Right: Social icon placeholders (X/Twitter, LinkedIn) — optional, hidden if unset.
+- Hero Section
+  - Quirky headline (choose one; configurable via JSON):
+    - “AI that ships on Tuesdays and surprises on Thursdays.”
+    - “Less hype, more shipping. OPDX.AI is nearly out of stealth.”
+    - “We trained the models; now we’re training the launch timer.”
+  - Sub-headline: one-line value promise (editable).
+  - Countdown timer to 2025-12-04 10:00 IST, auto-converts to visitor’s local time.
+  - Primary CTA: “Join the waitlist” (email capture).
+    - On submit: validate, Turnstile check, write to KV, show success state.
+  - Secondary CTA: “Add launch to calendar” (ICS + Google/Outlook/Apple links).
+- Feature Teasers (3–4 bullets)
+  - Short, benefit-first blurbs. Pure content; no heavy illustrations.
+- Footer
+  - Copyright, Privacy/Terms links (stub pages).
+  - Minimal nav; Contact placeholder email (hello@opdx.ai) or form.
+
+2.2 Placeholder Assets
+- Logo: Use a text logo (H1 with font treatment). Accepts future SVG drop-in with identical bounding box.
+- Favicon & OG image: Generate simple, brand-color placeholders (see SEO section).
+
+3) Branding & UX Guidelines (temporary but sharp)
+- Palette:
+  - Primary: #4C7DFF (electric blue)
+  - Accent: #22CC88 (mint)
+  - Neutral dark: #0E1116
+  - Neutral light: #E6EAF2
+  - Background default: #0B0F14 (near-black), Text default: #EAF0FF
+- Typography:
+  - Headline: Inter Tight or Space Grotesk (system fallbacks).
+  - Body: Inter (system fallbacks).
+  - Min font size 16px; fluid type.
+- Tone: Crisp, slightly mischievous; short sentences; no jargon walls.
+- Motion: Subtle micro-animations (opacity/translate 80–150ms, ease-out). Reduce motion if user prefers-reduced-motion.
+- Accessibility: WCAG 2.2 AA, color-contrast ≥ 4.5:1, complete keyboard nav, visible focus rings.
+
+4) Countdown & Time Handling
+- Source instant: 2025-12-04T10:00:00+05:30 (Asia/Kolkata).
+- Display: D days : H hrs : M min : S sec — updates every 500ms.
+- Visitor locale: Show remaining time relative to client device, not a hardcoded zone.
+- Edge cases: If past launch → switch UI to “We’re live” state with CTA link (configurable).
+- Drift guard: Use Intl.DateTimeFormat and Date correctly; no manual timezone math.
+
+5) Waitlist & Data Flow
+
+5.1 Anti-spam & Validation
+- Cloudflare Turnstile widget integrated on the CTA form.
+- Client validation: email regex + type=email.
+- Server (Worker) validates Turnstile token + sanitizes fields.
+
+5.2 Storage
+- Cloudflare KV (opdx_waitlist)
+  - Key: email:<lowercased>
+  - Value (JSON): { email, ts, uaHash, referer, ipHash }
+  - Hash IP/UA; do not store raw IP. Include consent flag.
+
+5.3 Optional Integrations (behind env flags)
+- Webhook to Google Sheets / Notion / MailerLite.
+- Double-opt-in email via transactional provider (deferred).
+
+6) SEO, Social, and Robots
+- Meta & OG/Twitter tags: dynamic title/description; OG image via a Worker endpoint that renders a simple branded PNG with headline + date (Satori or @vercel/og compatible on Workers).
+- Robots: noindex, nofollow until a LAUNCH_READY=true flag is set.
+- Sitemap: trivial single-URL sitemap.xml (generated).
+- Canonical: https://opdx.ai/.
+
+7) Performance Requirements
+- Ship minimal JS (countdown island only).
+- Inline critical CSS, defer the rest.
+- Preload fonts (swap), use system stacks fallback.
+- Image assets: SVG/AVIF, width/height set, lazy load non-critical.
+- Set Cache-Control and etag headers; immutable for static assets.
+
+8) Privacy, Consent, Legal
+- Consent copy under email field: “By joining, you agree to receive one launch update. No spam.”
+- Privacy/Terms stub pages with placeholder text blocks.
+- Respect Do Not Track (no invasive tracking pre-consent).
+
+9) Analytics & Observability
+- Privacy-friendly analytics: Plausible (or Cloudflare Analytics) via async script.
+- Events: waitlist_submit, turnstile_fail, countdown_complete.
+- Edge logs: Worker console.log with sample-rate; redact PII.
+
+10) Feature Flags & Env
+- Flags (readable at build/runtime):
+  - LAUNCH_READY (toggles robots/indexing and “We’re live” state)
+  - ENABLE_WAITLIST (form visibility)
+  - ENABLE_SOCIAL (header icons)
+- Env vars (Cloudflare Pages / Workers):
+  - CF_TURNSTILE_SITE_KEY, CF_TURNSTILE_SECRET
+  - KV_NAMESPACE_OPDX_WAITLIST
+  - Optional: WEBHOOK_URL, PLAUSIBLE_DOMAIN
+
+11) Build, Deploy, & DNS
+- Repo layout (Astro example):
+  /public
+    /icons (favicons, social images)
+  /src
+    /components (CountdownIsland, EmailForm, Turnstile, OGImageWorker)
+    /pages (index.astro, privacy.astro, terms.astro)
+    /styles
+    /lib (time.ts, validators.ts)
+  /functions (for Workers endpoints)
+  cloudflare-pages-config
+- CI/CD:
+  - Branch: main → auto deploy to Preview.
+  - Tag v* or LAUNCH_READY=true → Production.
+  - Block prod if Lighthouse CI < 90 on any category.
+- DNS: Apex → Cloudflare Pages. Add www CNAME. Force HTTPS & HSTS.
+
+12) Accessibility & QA Acceptance Criteria
+- Keyboard-only journey can reach and submit the form.
+- Screen reader announces countdown meaningfully (e.g., “Launch in 12 days, 4 hours”).
+- Focus states visible and non-obnoxious.
+- Color contrast AA verified (automated + manual).
+- Form errors announced with aria-live="polite".
+
+13) Testing Checklist (minimum)
+- Countdown shows correct remaining time for test timezones (IST, UTC, PST).
+- On date rollover to post-launch, hero swaps to “We’re live” without reload.
+- Email form: valid email → success; invalid → inline error; Turnstile fail → message.
+- KV contains new entry on success; dedupe on repeat submit.
+- Robots meta toggles with LAUNCH_READY.
+- OG image endpoint returns a valid PNG in <300ms at edge.
+
+14) Copy Blocks (configurable strings)
+- Headline options (pick one):
+  - “Less hype, more shipping. OPDX.AI is nearly out of stealth.”
+  - “We trained the models; now we’re training the launch timer.”
+  - “AI that ships on Tuesdays and surprises on Thursdays.”
+- Sub-headline (starter): “Tools that turn messy ideas into shipped features.”
+- CTA primary: “Join the waitlist”
+- CTA success: “You’re in. We’ll ping you on launch day.”
+- Countdown label: “Launching on December 4, 2025”
+- Footer note: “© 2025 OPDX.AI — Built for builders.”
+
+15) Deliverables
+1. Deployed landing page on https://opdx.ai/ + preview URL.
+2. Source repo with readme (setup, env, runbook).
+3. OG image Worker (simple branded image generator).
+4. KV namespace bound and verified; test script to read entries (local).
+5. Lighthouse report (mobile + desktop) attached to PR.
+6. QA checklist filled with pass/fail notes.
+
+16) Future-proofing (post-launch toggles)
+- Swap countdown with hero CTA → “Enter App” linking to app subdomain.
+- Gradually add sections (press, roadmap) behind flags.
+- Replace text logo with final SVG; update OG generator to use it.
+
+17) Timeline & Scope Guardrails
+- MVP (this brief): 1 page, waitlist, countdown, OG, analytics, KV, Turnstile, privacy/terms stubs.
+- Out of scope for MVP: Blog, pricing tables, multilingual, CMS, animations beyond micro.
+
+18) Nice-to-Have (only if free)
+- “Add to Calendar” pack:
+  - Generate .ics (UTC) for 2025-12-04T04:30Z (which is 10:00 IST).
+  - Precomposed links for Google/Outlook/Apple.
+
+Notes
+- Keep JS tiny. Prefer an Astro island for the timer and the form, everything else static.
+- Make the logo swap a one-line config change (drop in /public/logo.svg, update a single import).
+- Document how to toggle LAUNCH_READY and verify robots/OG behavior.

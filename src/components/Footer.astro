@@ -1,0 +1,55 @@
+---
+import { CONFIG } from '../lib/config';
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <nav class="footer-nav" aria-label="Footer navigation">
+      <a href="/privacy" class="footer-link">Privacy</a>
+      <span class="footer-separator" aria-hidden="true">•</span>
+      <a href="/terms" class="footer-link">Terms</a>
+      <span class="footer-separator" aria-hidden="true">•</span>
+      <a href={`mailto:${CONFIG.contactEmail}`} class="footer-link">Contact</a>
+    </nav>
+    <p class="footer-note">{CONFIG.footerNote}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 4rem;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(234, 240, 255, 0.1);
+    text-align: center;
+  }
+
+  .footer-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .footer-link {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    transition: color var(--transition-fast);
+  }
+
+  .footer-link:hover {
+    color: var(--color-primary);
+  }
+
+  .footer-separator {
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+  }
+
+  .footer-note {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+  }
+</style>
+

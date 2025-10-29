@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/legal.css';
+---
+
+<BaseLayout
+  title="Privacy Policy — OPDX.AI"
+  description="Privacy policy for OPDX.AI"
+>
+  <Header />
+  
+  <main class="legal-page">
+    <div class="container">
+      <h1>Privacy Policy</h1>
+      <p class="last-updated">Last updated: November 2024</p>
+      
+      <section class="legal-content">
+        <h2>Information We Collect</h2>
+        <p>
+          When you join our waitlist, we collect your email address. We also collect
+          anonymized information such as IP address hash and user agent hash for
+          security and analytics purposes.
+        </p>
+        
+        <h2>How We Use Your Information</h2>
+        <p>
+          We use your email address to send you a single notification when OPDX.AI launches.
+          We do not sell, rent, or share your information with third parties.
+        </p>
+        
+        <h2>Data Storage</h2>
+        <p>
+          Your information is stored securely using Cloudflare KV. We hash personally
+          identifiable information where possible to protect your privacy.
+        </p>
+        
+        <h2>Contact</h2>
+        <p>
+          If you have questions about this privacy policy, please contact us at{' '}
+          <a href="mailto:hello@opdx.ai">hello@opdx.ai</a>.
+        </p>
+      </section>
+    </div>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+

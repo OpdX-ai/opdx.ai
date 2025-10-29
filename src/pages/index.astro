@@ -1,0 +1,63 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CountdownIsland from '../components/CountdownIsland';
+import EmailForm from '../components/EmailForm';
+import CalendarLinks from '../components/CalendarLinks.astro';
+import { CONFIG } from '../lib/config';
+import '../styles/home.css';
+---
+
+<BaseLayout>
+  <Header />
+  
+  <main class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h2 class="hero-headline">{CONFIG.headline}</h2>
+        <p class="hero-subheadline">{CONFIG.subHeadline}</p>
+        
+        <CountdownIsland 
+          client:load
+          label={CONFIG.countdownLabel}
+          launchReady={CONFIG.LAUNCH_READY}
+        />
+        
+        {CONFIG.ENABLE_WAITLIST && (
+          <div class="cta-section">
+            <EmailForm
+              client:load
+              turnstileSiteKey={CONFIG.turnstileSiteKey}
+              primaryCta={CONFIG.ctaPrimary}
+              successMessage={CONFIG.ctaSuccess}
+            />
+            <CalendarLinks />
+          </div>
+        )}
+      </div>
+    </div>
+  </main>
+  
+  <section class="features-section">
+    <div class="container">
+      <div class="features-grid">
+        <div class="feature-item">
+          <h3 class="feature-title">Ship faster</h3>
+          <p class="feature-description">Turn ideas into features without the overhead.</p>
+        </div>
+        <div class="feature-item">
+          <h3 class="feature-title">AI-powered workflow</h3>
+          <p class="feature-description">Intelligent tools that learn and adapt to your needs.</p>
+        </div>
+        <div class="feature-item">
+          <h3 class="feature-title">Built for builders</h3>
+          <p class="feature-description">Designed by developers, for developers who ship.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <Footer />
+</BaseLayout>
+

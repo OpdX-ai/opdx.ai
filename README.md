@@ -1,235 +1,298 @@
-# OPDX.ai - Coming Soon Landing Page
+# OPDX.AI Landing Page
 
-A beautiful, modern landing page for OPDX.ai - Where Healthcare Meets Innovation.
+A high-performance "Launching Soon" landing page for OPDX.AI, built with Astro and deployed on Cloudflare Pages.
 
-## 🚀 Features
+## Features
 
-- **Countdown Timer** - Live countdown to launch date (December 4th, 2025)
-- **Email Notifications** - Visitors can sign up to be notified at launch
-- **Responsive Design** - Works perfectly on all devices
-- **Modern UI/UX** - Beautiful gradient background with smooth animations
-- **Feature Preview** - Showcases key features of the platform
+- ⚡ **Blazing Fast**: Static-first rendering with minimal JavaScript
+- 🎯 **Countdown Timer**: Real-time countdown to launch date with timezone support
+- 📧 **Waitlist Signup**: Email capture with Cloudflare Turnstile anti-spam
+- 📊 **Analytics Ready**: Plausible integration support
+- ♿ **Accessible**: WCAG 2.2 AA compliant
+- 🚀 **Performance**: Optimized for Lighthouse scores ≥ 95
 
-## 🛠️ Technologies Used
+## Tech Stack
 
-- HTML5
-- CSS3 (with modern features like Grid, Flexbox, and CSS Variables)
-- Vanilla JavaScript (no dependencies!)
-- Google Fonts (Inter)
+- [Astro](https://astro.build/) - Static-first framework
+- [React](https://react.dev/) - For interactive components (islands)
+- [Cloudflare Pages](https://pages.cloudflare.com/) - Hosting
+- [Cloudflare Workers](https://workers.cloudflare.com/) - Serverless functions
+- [Cloudflare KV](https://developers.cloudflare.com/kv/) - Edge storage
+- [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/) - Bot protection
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 opdx.ai/
-├── index.html          # Main HTML file
-├── styles.css          # All styling
-├── script.js           # Countdown timer and form handling
-└── README.md          # This file
+├── public/
+│   ├── favicon.svg
+│   └── icons/
+├── src/
+│   ├── components/
+│   │   ├── CountdownIsland.tsx    # Interactive countdown timer
+│   │   ├── EmailForm.tsx          # Waitlist form with Turnstile
+│   │   ├── Header.astro           # Site header
+│   │   ├── Footer.astro           # Site footer
+│   │   └── CalendarLinks.astro   # Calendar event links
+│   ├── layouts/
+│   │   └── BaseLayout.astro       # Base page layout
+│   ├── lib/
+│   │   ├── config.ts              # Configuration & feature flags
+│   │   ├── time.ts                # Time utilities
+│   │   └── validators.ts          # Validation utilities
+│   ├── pages/
+│   │   ├── index.astro            # Landing page
+│   │   ├── privacy.astro          # Privacy policy
+│   │   ├── terms.astro             # Terms of service
+│   │   └── sitemap.xml.ts         # Sitemap generator
+│   └── styles/
+│       ├── global.css             # Global styles
+│       ├── home.css               # Homepage styles
+│       ├── countdown.css          # Countdown styles
+│       ├── form.css               # Form styles
+│       └── legal.css              # Legal page styles
+├── functions/
+│   └── api/
+│       ├── waitlist.ts            # Waitlist API endpoint
+│       ├── og.ts                  # OG image generator
+│       └── calendar.ics.ts        # Calendar file generator
+├── astro.config.mjs
+├── package.json
+├── tsconfig.json
+└── wrangler.toml
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
-### Local Development
+### Prerequisites
+
+- Node.js 18+ and npm
+- Cloudflare account
+- Cloudflare Turnstile site key and secret
+
+### Installation
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/OpdX-ai/opdx.ai.git
+git clone <repository-url>
 cd opdx.ai
 ```
 
-2. Start a local server:
+2. Install dependencies:
 ```bash
-# Using npm scripts
-npm run serve
-
-# Or using Python 3
-python3 -m http.server 8000
-
-# Or using npx directly
-npx serve .
+npm install
 ```
 
-Then visit `http://localhost:3000` (or `http://localhost:8000` for Python) in your browser.
+3. Set up environment variables (see [Environment Variables](#environment-variables))
 
-## 🌐 Deployment Options
-
-### Quick Deploy Commands
-
+4. Create a Cloudflare KV namespace:
 ```bash
-# Deploy to Cloudflare Pages (recommended - fastest global CDN)
-npm run deploy
-
-# Or using npx directly
-npx wrangler pages deploy . --project-name=opdx-ai
-
-# Other options:
-npm run deploy:vercel
-npm run deploy:netlify
-npm run deploy:surge
+npx wrangler kv:namespace create "OPDX_WAITLIST"
 ```
 
-### Option 1: Cloudflare Pages (Recommended - Global CDN)
+5. Update `wrangler.toml` with your KV namespace ID:
+```toml
+[[kv_namespaces]]
+binding = "OPDX_WAITLIST"
+id = "your-namespace-id"
+```
 
-**One-Command Deploy:**
+### Development
+
+Start the development server:
 ```bash
-npm run deploy
-# or
-npx wrangler pages deploy . --project-name=opdx-ai
+npm run dev
 ```
 
-**First-time setup:**
-1. Install Wrangler (optional - npx will handle it):
-   ```bash
-   npm install -g wrangler
-   ```
+Visit `http://localhost:4321` to see the site.
 
-2. Login to Cloudflare:
-   ```bash
-   npx wrangler login
-   ```
+### Build
 
-3. Deploy:
-   ```bash
-   npm run deploy
-   ```
-
-4. Configure custom domain in Cloudflare dashboard:
-   - Go to your [Cloudflare Pages dashboard](https://dash.cloudflare.com/?to=/:account/pages)
-   - Select your project
-   - Go to "Custom domains"
-   - Add `opdx.ai` and `www.opdx.ai`
-
-**OR Connect GitHub (Automatic Deployments):**
-1. Go to [Cloudflare Pages](https://dash.cloudflare.com/?to=/:account/pages)
-2. Click "Connect to Git"
-3. Select `OpdX-ai/opdx.ai` repository
-4. Configure:
-   - Build command: (leave empty)
-   - Build output directory: `/`
-5. Click "Save and Deploy"
-6. Add custom domain `opdx.ai` in settings
-
-### Option 2: Vercel (Fast & Easy)
-
-**One-Command Deploy:**
+Build for production:
 ```bash
-npx vercel --prod
+npm run build
 ```
 
-Or using the dashboard:
-1. Go to [Vercel](https://vercel.com/new)
-2. Import from GitHub → Select `OpdX-ai/opdx.ai`
-3. Click "Deploy"
-4. Configure your custom domain (opdx.ai) in project settings
-
-### Option 3: Netlify
-
-**One-Command Deploy:**
+Preview the production build:
 ```bash
-npx netlify-cli deploy --prod --dir=.
+npm run preview
 ```
 
-Or using the dashboard:
-1. Go to [Netlify](https://app.netlify.com/start)
-2. Click "Import from Git" → GitHub
-3. Select `OpdX-ai/opdx.ai` repository
-4. Click "Deploy site"
-5. Configure your custom domain (opdx.ai) in site settings
+## Environment Variables
 
-### Option 4: GitHub Pages
+Create a `.env` file or set these in Cloudflare Pages:
 
-1. Go to: https://github.com/OpdX-ai/opdx.ai/settings/pages
-2. Source: Deploy from a branch → `main` → `/root`
-3. Save and wait ~5 minutes
-4. Configure custom domain `opdx.ai`
+### Required
 
-### Option 5: Surge (Quick Testing)
+- `CF_TURNSTILE_SITE_KEY` - Cloudflare Turnstile site key
+- `CF_TURNSTILE_SECRET` - Cloudflare Turnstile secret key
 
-```bash
-npx surge . opdx.ai
+### Optional
+
+- `PUBLIC_LAUNCH_READY` - Set to `"true"` when ready to launch (enables indexing)
+- `PUBLIC_ENABLE_WAITLIST` - Set to `"false"` to disable waitlist form (default: enabled)
+- `PUBLIC_ENABLE_SOCIAL` - Set to `"true"` to show social links
+- `PUBLIC_TURNSTILE_SITE_KEY` - Public Turnstile site key (for client-side)
+- `PUBLIC_TWITTER_URL` - Twitter/X profile URL
+- `PUBLIC_LINKEDIN_URL` - LinkedIn profile URL
+- `PUBLIC_PLAUSIBLE_DOMAIN` - Plausible analytics domain
+- `WEBHOOK_URL` - Optional webhook URL for waitlist submissions
+
+### Setting Environment Variables in Cloudflare Pages
+
+1. Go to your Cloudflare Pages project
+2. Navigate to Settings → Environment variables
+3. Add variables for Production, Preview, or both
+
+## Deployment
+
+### Cloudflare Pages
+
+1. Push your code to GitHub
+2. Connect your repository to Cloudflare Pages
+3. Configure build settings:
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+4. Add environment variables (see above)
+5. Bind KV namespace:
+   - Settings → Functions → KV Namespace Bindings
+   - Add `OPDX_WAITLIST` binding
+
+### DNS Setup
+
+1. Add your domain in Cloudflare Pages
+2. Point your domain's A record to Cloudflare Pages
+3. Enable HTTPS and HSTS
+
+## Configuration
+
+### Launch Date
+
+The launch date is configured in `src/lib/time.ts`:
+```typescript
+export const LAUNCH_DATE_IST = '2025-12-04T10:00:00+05:30';
 ```
 
-### Option 6: Traditional Hosting (cPanel, etc.)
+### Content Customization
 
-1. Upload all files via FTP/SFTP to your hosting provider
-2. Point your domain to the hosting server
-3. Ensure `index.html` is in the public_html or www directory
+Edit `src/lib/config.ts` to customize:
+- Headlines
+- Feature descriptions
+- Social links
+- Contact information
 
-## 🎨 Customization
+### Branding
 
-### Change Launch Date
-
-Edit `script.js` line 3:
-```javascript
-const launchDate = new Date('December 4, 2025 00:00:00').getTime();
-```
-
-### Update Colors
-
-Edit CSS variables in `styles.css`:
+Update colors and fonts in `src/styles/global.css`:
 ```css
 :root {
-    --primary-color: #2563eb;
-    --secondary-color: #1e40af;
-    --accent-color: #60a5fa;
-    /* ... */
+  --color-primary: #4C7DFF;
+  --color-accent: #22CC88;
+  /* ... */
 }
 ```
 
-### Modify Content
+### Logo Replacement
 
-Edit the text directly in `index.html`.
-
-## 📧 Email Collection
-
-Currently, emails are stored in localStorage (client-side only). For production, you should integrate with:
-
-- **Mailchimp** - Email marketing platform
-- **SendGrid** - Email API service
-- **Your own backend** - Store in database
-- **Google Sheets** - Via Google Forms API
-- **Netlify Forms** - Built-in form handling
-
-Example backend integration in `script.js`:
-```javascript
-// Replace localStorage with API call
-fetch('https://your-api.com/subscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email: email })
-});
+To replace the text logo with an SVG:
+1. Place your logo at `public/logo.svg`
+2. Update `src/components/Header.astro`:
+```astro
+<img src="/logo.svg" alt="OPDX.AI" class="logo-image" />
 ```
 
-## 🔒 Custom Domain Setup
+## Feature Flags
 
-1. Log in to your domain registrar (where you bought opdx.ai)
-2. Find DNS settings
-3. Add the following records (example for Netlify):
-   - Type: `A` Record, Host: `@`, Value: `75.2.60.5`
-   - Type: `CNAME`, Host: `www`, Value: `your-site.netlify.app`
-4. Wait for DNS propagation (can take up to 48 hours, usually much faster)
+Control features using environment variables:
 
-## 📱 Browser Support
+- **LAUNCH_READY**: When `true`, enables indexing (removes `noindex`) and shows "We're live" state
+- **ENABLE_WAITLIST**: Toggle waitlist form visibility
+- **ENABLE_SOCIAL**: Toggle social media links
 
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
+## Testing
 
-## 🤝 Contributing
+### Local Testing
 
-Feel free to submit issues and enhancement requests!
+Test the waitlist API locally with Wrangler:
+```bash
+npx wrangler pages dev dist --kv OPDX_WAITLIST=your-namespace-id
+```
 
-## 📝 License
+### Checklist
 
-Copyright © 2025 OPDX.ai. All rights reserved.
+- [ ] Countdown shows correct time in different timezones
+- [ ] Email form validates correctly
+- [ ] Turnstile verification works
+- [ ] KV storage persists entries
+- [ ] OG image generates correctly
+- [ ] Calendar ICS file downloads
+- [ ] Robots meta toggles with `LAUNCH_READY`
+- [ ] Accessibility: keyboard navigation works
+- [ ] Accessibility: screen reader announces countdown
+- [ ] Performance: Lighthouse scores ≥ 95
 
-## 📞 Contact
+## Performance Optimization
 
-For questions or support, email: hello@opdx.ai
+- Minimal JavaScript (only countdown and form islands)
+- Inline critical CSS
+- System font fallbacks
+- Lazy loading for non-critical assets
+- Optimized bundle size (target: < 50KB gzipped)
 
----
+## Analytics
 
-Built with ❤️ for doctors and healthcare professionals
+Plausible analytics is included (if `PUBLIC_PLAUSIBLE_DOMAIN` is set). Events tracked:
+- `waitlist_submit` - User submits email
+- `turnstile_fail` - Turnstile verification fails
+
+## API Endpoints
+
+### POST `/api/waitlist`
+
+Submit email to waitlist.
+
+**Request:**
+```json
+{
+  "email": "user@example.com",
+  "token": "turnstile-token"
+}
+```
+
+**Response:**
+```json
+{
+  "message": "Success"
+}
+```
+
+### GET `/api/og`
+
+Generate Open Graph image (returns SVG).
+
+### GET `/api/calendar.ics`
+
+Download calendar event file.
+
+## Troubleshooting
+
+### Turnstile not loading
+- Check `PUBLIC_TURNSTILE_SITE_KEY` is set
+- Verify Turnstile domain whitelist in Cloudflare dashboard
+
+### KV writes failing
+- Verify KV namespace is bound in Cloudflare Pages
+- Check namespace ID in `wrangler.toml`
+
+### Build errors
+- Ensure Node.js version is 18+
+- Clear `node_modules` and reinstall: `rm -rf node_modules && npm install`
+
+## License
+
+© 2025 OPDX.AI
+
+## Support
+
+For questions or issues, contact: hello@opdx.ai
 

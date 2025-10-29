@@ -1,31 +1,25 @@
 {
-  "name": "opdx.ai",
+  "name": "opdx-ai-landing",
+  "type": "module",
   "version": "1.0.0",
-  "description": "OPDX.ai - Where Healthcare Meets Innovation. Intelligent clinical practice management for doctors.",
   "scripts": {
-    "dev": "npx wrangler pages dev . --port=8000",
-    "dev:python": "python3 -m http.server 8000",
-    "serve": "npx serve .",
-    "deploy": "npx wrangler pages deploy . --project-name=opdx-ai",
-    "deploy:cloudflare": "npx wrangler pages deploy . --project-name=opdx-ai",
-    "deploy:vercel": "npx vercel --prod",
-    "deploy:netlify": "npx netlify-cli deploy --prod --dir=.",
-    "deploy:surge": "npx surge . opdx.ai"
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
   },
-  "keywords": [
-    "healthcare",
-    "clinic",
-    "doctors",
-    "medical",
-    "opdx",
-    "landing-page"
-  ],
-  "author": "OpdX-ai",
-  "license": "MIT",
-  "homepage": "https://opdx.ai",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/OpdX-ai/opdx.ai.git"
+  "dependencies": {
+    "@astrojs/cloudflare": "^11.0.2",
+    "@astrojs/react": "^3.6.0",
+    "@cloudflare/workers-types": "^4.20241106.0",
+    "astro": "^4.15.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.3"
   }
 }
 

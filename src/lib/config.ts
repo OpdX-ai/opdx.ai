@@ -1,0 +1,30 @@
+/**
+ * Configuration and feature flags
+ */
+
+export const CONFIG = {
+  // Feature flags (read from environment)
+  LAUNCH_READY: import.meta.env.PUBLIC_LAUNCH_READY === 'true',
+  ENABLE_WAITLIST: import.meta.env.PUBLIC_ENABLE_WAITLIST !== 'false',
+  ENABLE_SOCIAL: import.meta.env.PUBLIC_ENABLE_SOCIAL === 'true',
+
+  // Content
+  headline: 'Less hype, more shipping. OPDX.AI is nearly out of stealth.',
+  subHeadline: 'Tools that turn messy ideas into shipped features.',
+  ctaPrimary: 'Join the waitlist',
+  ctaSuccess: "You're in. We'll ping you on launch day.",
+  countdownLabel: 'Launching on December 4, 2025',
+  footerNote: '© 2025 OPDX.AI — Built for builders.',
+
+  // URLs
+  siteUrl: 'https://opdx.ai',
+  contactEmail: 'hello@opdx.ai',
+  
+  // Social links (optional)
+  twitterUrl: import.meta.env.PUBLIC_TWITTER_URL || '',
+  linkedinUrl: import.meta.env.PUBLIC_LINKEDIN_URL || '',
+
+  // Turnstile
+  turnstileSiteKey: import.meta.env.PUBLIC_TURNSTILE_SITE_KEY || '',
+} as const;
+

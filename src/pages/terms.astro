@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import '../styles/legal.css';
+---
+
+<BaseLayout
+  title="Terms of Service — OPDX.AI"
+  description="Terms of service for OPDX.AI"
+>
+  <Header />
+  
+  <main class="legal-page">
+    <div class="container">
+      <h1>Terms of Service</h1>
+      <p class="last-updated">Last updated: November 2024</p>
+      
+      <section class="legal-content">
+        <h2>Acceptance of Terms</h2>
+        <p>
+          By accessing or using OPDX.AI, you agree to be bound by these Terms of Service.
+        </p>
+        
+        <h2>Use License</h2>
+        <p>
+          Permission is granted to temporarily access the materials on OPDX.AI for personal,
+          non-commercial use only.
+        </p>
+        
+        <h2>Disclaimer</h2>
+        <p>
+          The materials on OPDX.AI are provided on an "as is" basis. OPDX.AI makes no
+          warranties, expressed or implied, and hereby disclaims all other warranties.
+        </p>
+        
+        <h2>Contact</h2>
+        <p>
+          If you have questions about these terms, please contact us at{' '}
+          <a href="mailto:hello@opdx.ai">hello@opdx.ai</a>.
+        </p>
+      </section>
+    </div>
+  </main>
+  
+  <Footer />
+</BaseLayout>
+

@@ -1,0 +1,122 @@
+/**
+ * Waitlist API endpoint
+ * Handles email submissions with Turnstile verification and KV storage
+ */
+
+function sanitizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+async function hashString(str: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
+}
+
+export const onRequest: PagesFunction<{
+  OPDX_WAITLIST: KVNamespace;
+  CF_TURNSTILE_SECRET: string;
+}> = async (context) => {
+  if (context.request.method !== 'POST') {
+    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+      status: 405,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  try {
+    const { email, token } = await context.request.json();
+
+    if (!email || !token) {
+      return new Response(JSON.stringify({ error: 'Email and token required' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    const sanitizedEmail = sanitizeEmail(email);
+
+    // Verify Turnstile token
+    const turnstileSecret = context.env.CF_TURNSTILE_SECRET;
+    if (turnstileSecret) {
+      const verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+      const verifyResponse = await fetch(verifyUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          secret: turnstileSecret,
+          response: token,
+        }),
+      });
+
+      const verifyData = await verifyResponse.json();
+
+      if (!verifyData.success) {
+        console.error('Turnstile verification failed:', verifyData);
+        return new Response(JSON.stringify({ error: 'Verification failed' }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // Get request metadata
+    const cf = context.request.cf;
+    const ip = cf?.clientAsn || 'unknown';
+    const ua = context.request.headers.get('user-agent') || 'unknown';
+    const referer = context.request.headers.get('referer') || '';
+
+    // Hash IP and UA (simple hash, non-cryptographic)
+    const ipHash = await hashString(ip);
+    const uaHash = await hashString(ua.substring(0, 100));
+
+    // Check if email already exists
+    const existing = await context.env.OPDX_WAITLIST.get(`email:${sanitizedEmail}`);
+    if (existing) {
+      return new Response(JSON.stringify({ message: 'Already subscribed', duplicate: true }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
+    // Store in KV
+    const entry = {
+      email: sanitizedEmail,
+      ts: Date.now(),
+      uaHash,
+      referer,
+      ipHash,
+      consent: true,
+    };
+
+    await context.env.OPDX_WAITLIST.put(`email:${sanitizedEmail}`, JSON.stringify(entry));
+
+    // Optional webhook
+    const webhookUrl = context.env.WEBHOOK_URL;
+    if (webhookUrl) {
+      try {
+        await fetch(webhookUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: sanitizedEmail, timestamp: entry.ts }),
+        });
+      } catch (err) {
+        console.error('Webhook error:', err);
+      }
+    }
+
+    return new Response(JSON.stringify({ message: 'Success' }), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Waitlist API error:', error);
+    return new Response(JSON.stringify({ error: 'Internal server error' }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+};
+
