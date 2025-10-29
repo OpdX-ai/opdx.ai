@@ -138,13 +138,33 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
       });
 
       console.log('Response status:', response.status, response.statusText);
+      console.log('Content-Type:', response.headers.get('content-type'));
 
       let data;
       try {
         const responseText = await response.text();
-        console.log('Response text:', responseText);
-        data = JSON.parse(responseText);
+        console.log('Response text (first 200 chars):', responseText.substring(0, 200));
+        
+        // Check if response is HTML (indicates routing issue)
+        if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+          console.error('Received HTML instead of JSON - routing issue!');
+          throw new Error('Server returned HTML instead of JSON. This indicates a routing problem.');
+        }
+        
+        if (!responseText.trim()) {
+          console.error('Empty response body');
+          // If status is 200 and body is empty, treat as success
+          if (response.ok) {
+            data = { message: 'Success' };
+          } else {
+            throw new Error('Empty response from server');
+          }
+        } else {
+          data = JSON.parse(responseText);
+        }
       } catch (jsonError) {
+        console.error('JSON parse error:', jsonError);
+        console.error('Response was:', responseText?.substring(0, 500) || 'empty');
         // If response is not JSON, throw with the text
         throw new Error('Invalid response from server. Please try again.');
       }
