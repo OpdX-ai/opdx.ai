@@ -46,12 +46,17 @@ export const HEAD: APIRoute = async () => {
 
 // Handle POST for actual submissions
 export const POST: APIRoute = async ({ request, locals }) => {
+  // CRITICAL: Log immediately to verify this route is being called
   console.log('=== ASTRO ROUTE: POST called ===');
   console.log('Request details:', {
     method: request.method,
     url: request.url,
+    pathname: new URL(request.url).pathname,
     contentType: request.headers.get('content-type'),
   });
+
+  // Return JSON immediately with a unique marker to verify this handler ran
+  // If you see HTML instead, this handler is NOT being called
 
   // Validate Content-Type
   const contentType = request.headers.get('content-type');
@@ -243,10 +248,18 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }
     }
 
-    console.log('Returning success response');
-    return new Response(JSON.stringify({ message: 'Success' }), {
+    console.log('Returning success response with JSON');
+    // Ensure Content-Type is explicitly set
+    const headers = getSecurityHeaders();
+    headers['Content-Type'] = 'application/json'; // Force JSON content type
+    
+    return new Response(JSON.stringify({ 
+      message: 'Success',
+      source: 'Astro API Route',
+      timestamp: Date.now()
+    }), {
       status: 200,
-      headers: getSecurityHeaders(),
+      headers,
     });
   } catch (error) {
     console.error('Waitlist API error:', error instanceof Error ? error.message : 'Unknown error');
