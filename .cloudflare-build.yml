@@ -1,0 +1,5 @@
+# Cloudflare Pages build configuration
+# Note: These settings should be configured in the Cloudflare Dashboard
+# Build command: npm run build
+# Build output: dist
+# Framework: Astro

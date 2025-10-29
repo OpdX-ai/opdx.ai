@@ -9,12 +9,12 @@ export const CONFIG = {
   ENABLE_SOCIAL: import.meta.env.PUBLIC_ENABLE_SOCIAL === 'true',
 
   // Content
-  headline: 'Less hype, more shipping. OPDX.AI is nearly out of stealth.',
-  subHeadline: 'Tools that turn messy ideas into shipped features.',
+  headline: 'Streamline your OPD operations. OPDX.AI is launching soon.',
+  subHeadline: 'A comprehensive platform for clinic doctors: appointments, patient records, and payments, all in one place.',
   ctaPrimary: 'Join the waitlist',
-  ctaSuccess: "You're in. We'll ping you on launch day.",
+  ctaSuccess: "You're in. We'll notify you on launch day.",
   countdownLabel: 'Launching on December 4, 2025',
-  footerNote: '© 2025 OPDX.AI — Built for builders.',
+  footerNote: '© 2025 OPDX.AI — Transforming healthcare operations.',
 
   // URLs
   siteUrl: 'https://opdx.ai',

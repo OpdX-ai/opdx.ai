@@ -18,7 +18,7 @@ export const onRequest: PagesFunction = async () => {
     OPDX.AI
   </text>
   <text x="600" y="360" font-family="system-ui, -apple-system, sans-serif" font-size="36" font-weight="600" fill="#EAF0FF" text-anchor="middle">
-    Less hype, more shipping.
+    Streamline Your OPD Operations
   </text>
   <text x="600" y="420" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="400" fill="#22CC88" text-anchor="middle">
     Launching December 4, 2025
