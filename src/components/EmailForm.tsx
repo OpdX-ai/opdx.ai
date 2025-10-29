@@ -26,35 +26,83 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
   const [widgetId, setWidgetId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!turnstileSiteKey) return;
+    if (!turnstileSiteKey) {
+      console.warn('Turnstile site key not configured');
+      return;
+    }
 
-    const script = document.createElement('script');
-    script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
-    script.async = true;
-    script.defer = true;
-    document.head.appendChild(script);
-
-    script.onload = () => {
+    // Check if script already exists
+    let script = document.querySelector('script[src="https://challenges.cloudflare.com/turnstile/v0/api.js"]') as HTMLScriptElement;
+    
+    const renderTurnstile = () => {
       const container = document.getElementById('turnstile-container');
-      if (container && window.turnstile) {
+      if (!container) {
+        console.error('Turnstile container not found');
+        return;
+      }
+      
+      if (!window.turnstile) {
+        console.error('Turnstile not loaded');
+        return;
+      }
+
+      // Clear container first
+      container.innerHTML = '';
+      
+      try {
         const id = window.turnstile.render(container, {
           sitekey: turnstileSiteKey,
           callback: (token: string) => {
+            console.log('Turnstile verification successful');
             setTurnstileToken(token);
+            setErrorMessage('');
           },
           'error-callback': () => {
+            console.error('Turnstile verification error');
             setTurnstileToken(null);
             setErrorMessage('Verification failed. Please try again.');
           },
+          'expired-callback': () => {
+            console.log('Turnstile token expired');
+            setTurnstileToken(null);
+          },
         });
         setWidgetId(id);
+      } catch (error) {
+        console.error('Error rendering Turnstile:', error);
+        setErrorMessage('Failed to load verification. Please refresh the page.');
       }
     };
+
+    if (script) {
+      // Script already loaded
+      if (window.turnstile) {
+        renderTurnstile();
+      } else {
+        script.addEventListener('load', renderTurnstile);
+      }
+    } else {
+      // Load script
+      script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js';
+      script.async = true;
+      script.defer = true;
+      script.onload = renderTurnstile;
+      script.onerror = () => {
+        console.error('Failed to load Turnstile script');
+        setErrorMessage('Failed to load verification. Please refresh the page.');
+      };
+      document.head.appendChild(script);
+    }
 
     return () => {
       // Cleanup
       if (widgetId && window.turnstile) {
-        window.turnstile.reset(widgetId);
+        try {
+          window.turnstile.remove(widgetId);
+        } catch (e) {
+          // Ignore cleanup errors
+        }
       }
     };
   }, [turnstileSiteKey]);
@@ -77,6 +125,7 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
     }
 
     try {
+      console.log('Submitting email:', email.trim().toLowerCase());
       const response = await fetch('/api/waitlist', {
         method: 'POST',
         headers: {
@@ -88,10 +137,21 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
         }),
       });
 
-      const data = await response.json();
+      console.log('Response status:', response.status, response.statusText);
+
+      let data;
+      try {
+        const responseText = await response.text();
+        console.log('Response text:', responseText);
+        data = JSON.parse(responseText);
+      } catch (jsonError) {
+        // If response is not JSON, throw with the text
+        throw new Error('Invalid response from server. Please try again.');
+      }
 
       if (!response.ok) {
-        throw new Error(data.error || 'Something went wrong. Please try again.');
+        console.error('API error:', data);
+        throw new Error(data.error || data.message || `Server error: ${response.status}`);
       }
 
       setStatus('success');
@@ -122,8 +182,40 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
     setEmail('');
     setErrorMessage('');
     setTurnstileToken(null);
+    // Reset Turnstile widget
     if (widgetId && window.turnstile) {
-      window.turnstile.reset(widgetId);
+      try {
+        window.turnstile.reset(widgetId);
+      } catch (e) {
+        // If reset fails, re-render the widget
+        setWidgetId(null);
+        const container = document.getElementById('turnstile-container');
+        if (container) {
+          container.innerHTML = '';
+          setTimeout(() => {
+            if (window.turnstile && turnstileSiteKey) {
+              const id = window.turnstile.render(container, {
+                sitekey: turnstileSiteKey,
+                callback: (token: string) => {
+                  setTurnstileToken(token);
+                  setErrorMessage('');
+                },
+                'error-callback': () => {
+                  setTurnstileToken(null);
+                  setErrorMessage('Verification failed. Please try again.');
+                },
+              });
+              setWidgetId(id);
+            }
+          }, 100);
+        }
+      }
+    } else {
+      // If no widget ID, clear container to trigger re-render
+      const container = document.getElementById('turnstile-container');
+      if (container) {
+        container.innerHTML = '';
+      }
     }
   };
 
