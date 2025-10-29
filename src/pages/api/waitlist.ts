@@ -111,6 +111,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     const runtimeEnv = (locals.runtime as any)?.env;
     const turnstileSecret = runtimeEnv?.CF_TURNSTILE_SECRET || import.meta.env.CF_TURNSTILE_SECRET;
     const kvNamespace = runtimeEnv?.OPDX_WAITLIST;
+    
+    console.log('KV Namespace available:', !!kvNamespace);
+    console.log('Turnstile secret available:', !!turnstileSecret);
 
     // Rate limiting - prevent abuse (if KV is available)
     const ip = request.headers.get('cf-connecting-ip') || 
@@ -179,6 +182,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Check if email already exists (if KV is available)
     if (kvNamespace) {
+      console.log('Checking KV for existing email:', sanitizedEmailValue);
       const existing = await kvNamespace.get(`email:${sanitizedEmailValue}`);
       if (existing) {
         console.log('Email already exists:', sanitizedEmailValue);
@@ -197,10 +201,25 @@ export const POST: APIRoute = async ({ request, locals }) => {
         consent: true,
       };
 
-      await kvNamespace.put(`email:${sanitizedEmailValue}`, JSON.stringify(entry));
-      console.log('Email stored successfully:', sanitizedEmailValue);
+      console.log('Storing email in KV:', sanitizedEmailValue, 'with entry:', entry);
+      try {
+        await kvNamespace.put(`email:${sanitizedEmailValue}`, JSON.stringify(entry));
+        console.log('✅ Email stored successfully in KV:', sanitizedEmailValue);
+        
+        // Verify it was stored
+        const verify = await kvNamespace.get(`email:${sanitizedEmailValue}`);
+        if (verify) {
+          console.log('✅ Verified email is stored in KV');
+        } else {
+          console.error('❌ Email not found after storing - KV write may have failed');
+        }
+      } catch (kvError) {
+        console.error('❌ KV storage error:', kvError);
+        // Don't fail the request, but log the error
+      }
     } else {
-      console.warn('KV namespace not available - email not stored. This is OK in local dev.');
+      console.error('❌ KV namespace not available - email WILL NOT be stored!');
+      console.error('This is a configuration issue. Check Cloudflare Pages KV bindings.');
       // In development without KV, we can still return success
       // In production, this should be configured
     }
