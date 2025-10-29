@@ -44,13 +44,22 @@ async function hashString(str: string): Promise<string> {
 }
 
 // Security headers for all responses
-function getSecurityHeaders(): Record<string, string> {
-  return {
+function getSecurityHeaders(includeCors = false): Record<string, string> {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     'X-Content-Type-Options': 'nosniff',
     'X-Frame-Options': 'DENY',
     'Cache-Control': 'no-store, no-cache, must-revalidate',
   };
+  
+  // Add CORS headers if needed (same-origin requests typically don't need this)
+  if (includeCors) {
+    headers['Access-Control-Allow-Origin'] = '*';
+    headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS';
+    headers['Access-Control-Allow-Headers'] = 'Content-Type';
+  }
+  
+  return headers;
 }
 
 export const onRequest = async (context: PagesFunctionContext) => {
