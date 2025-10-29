@@ -4,16 +4,16 @@ pages_build_output_dir = "dist"
 
 [[kv_namespaces]]
 binding = "OPDX_WAITLIST"
-id = "your-kv-namespace-id"
-preview_id = "your-kv-preview-id"
+id = "47bc262e471849f6b0d95aaf09f88977"
+preview_id = "ec5a6d85d4064f3cbc78cb21ff54e027"
 
 [env.production]
 [[env.production.kv_namespaces]]
 binding = "OPDX_WAITLIST"
-id = "your-kv-namespace-id"
+id = "47bc262e471849f6b0d95aaf09f88977"
 
 [env.preview]
 [[env.preview.kv_namespaces]]
 binding = "OPDX_WAITLIST"
-id = "your-kv-preview-id"
+id = "ec5a6d85d4064f3cbc78cb21ff54e027"
 
