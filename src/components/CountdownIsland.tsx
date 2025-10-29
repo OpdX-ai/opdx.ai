@@ -9,10 +9,13 @@ interface CountdownIslandProps {
 }
 
 export default function CountdownIsland({ label, launchReady = false }: CountdownIslandProps) {
-  const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>(getTimeRemaining());
-  const [launchPassed, setLaunchPassed] = useState(isLaunchDatePassed());
+  const [timeRemaining, setTimeRemaining] = useState<TimeRemaining>({ days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 });
+  const [launchPassed, setLaunchPassed] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    // Set initial values on mount to avoid hydration mismatch
+    setMounted(true);
     const updateTimer = () => {
       const remaining = getTimeRemaining();
       setTimeRemaining(remaining);
@@ -26,6 +29,36 @@ export default function CountdownIsland({ label, launchReady = false }: Countdow
 
     return () => clearInterval(interval);
   }, []);
+
+  // Avoid hydration mismatch by not rendering until mounted
+  if (!mounted) {
+    return (
+      <div className="countdown-container" role="status" aria-live="polite">
+        <p className="countdown-label">{label}</p>
+        <div className="countdown-grid">
+          <div className="countdown-item">
+            <span className="countdown-value" aria-label="0 days">00</span>
+            <span className="countdown-unit">days</span>
+          </div>
+          <div className="countdown-separator" aria-hidden="true">:</div>
+          <div className="countdown-item">
+            <span className="countdown-value" aria-label="0 hours">00</span>
+            <span className="countdown-unit">hrs</span>
+          </div>
+          <div className="countdown-separator" aria-hidden="true">:</div>
+          <div className="countdown-item">
+            <span className="countdown-value" aria-label="0 minutes">00</span>
+            <span className="countdown-unit">min</span>
+          </div>
+          <div className="countdown-separator" aria-hidden="true">:</div>
+          <div className="countdown-item">
+            <span className="countdown-value" aria-label="0 seconds">00</span>
+            <span className="countdown-unit">sec</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (launchPassed || launchReady) {
     return (
