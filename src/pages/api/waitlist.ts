@@ -16,10 +16,42 @@ function getSecurityHeaders(): Record<string, string> {
   };
 }
 
+// Handle OPTIONS for CORS preflight
+export const OPTIONS: APIRoute = async () => {
+  console.log('=== ASTRO ROUTE: Handling OPTIONS ===');
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+};
+
+// Handle HEAD for health checks
+export const HEAD: APIRoute = async () => {
+  console.log('=== ASTRO ROUTE: Handling HEAD ===');
+  return new Response(null, {
+    status: 200,
+    headers: getSecurityHeaders(),
+  });
+};
+
+// Handle POST for actual submissions
 export const POST: APIRoute = async ({ request, locals }) => {
+  console.log('=== ASTRO ROUTE: POST called ===');
+  console.log('Request details:', {
+    method: request.method,
+    url: request.url,
+    contentType: request.headers.get('content-type'),
+  });
+
   // Validate Content-Type
   const contentType = request.headers.get('content-type');
   if (!contentType || !contentType.includes('application/json')) {
+    console.log('Invalid content type:', contentType);
     return new Response(JSON.stringify({ error: 'Invalid content type' }), {
       status: 415,
       headers: getSecurityHeaders(),
@@ -31,7 +63,9 @@ export const POST: APIRoute = async ({ request, locals }) => {
     let body;
     try {
       body = await request.json();
+      console.log('Body parsed successfully');
     } catch (parseError) {
+      console.error('JSON parse error:', parseError);
       return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
         status: 400,
         headers: getSecurityHeaders(),
@@ -106,6 +140,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
 
     // Verify Turnstile token
     if (turnstileSecret) {
+      console.log('Verifying Turnstile token...');
       const verifyUrl = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
       const verifyResponse = await fetch(verifyUrl, {
         method: 'POST',
@@ -130,6 +165,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
           headers: getSecurityHeaders(),
         });
       }
+      console.log('Turnstile verification successful');
     } else {
       console.warn('CF_TURNSTILE_SECRET not configured - skipping verification');
     }
@@ -145,6 +181,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (kvNamespace) {
       const existing = await kvNamespace.get(`email:${sanitizedEmailValue}`);
       if (existing) {
+        console.log('Email already exists:', sanitizedEmailValue);
         return new Response(JSON.stringify({ message: 'Already subscribed', duplicate: true }), {
           status: 200,
           headers: getSecurityHeaders(),
@@ -161,6 +198,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       };
 
       await kvNamespace.put(`email:${sanitizedEmailValue}`, JSON.stringify(entry));
+      console.log('Email stored successfully:', sanitizedEmailValue);
     } else {
       console.warn('KV namespace not available - email not stored. This is OK in local dev.');
       // In development without KV, we can still return success
@@ -181,6 +219,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
       }
     }
 
+    console.log('Returning success response');
     return new Response(JSON.stringify({ message: 'Success' }), {
       status: 200,
       headers: getSecurityHeaders(),
