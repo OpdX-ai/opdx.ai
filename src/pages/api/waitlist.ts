@@ -18,13 +18,6 @@ async function hashString(str: string): Promise<string> {
 }
 
 export const POST: APIRoute = async ({ request, locals }) => {
-  if (request.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
-      status: 405,
-      headers: { 'Content-Type': 'application/json' },
-    });
-  }
-
   try {
     const { email, token } = await request.json();
 
