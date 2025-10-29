@@ -5,11 +5,14 @@
   ],
   "exclude": [
     "/",
+    "/index.html",
     "/_astro/*",
     "/favicon.svg",
     "/sitemap.xml",
     "/privacy",
-    "/terms"
+    "/terms",
+    "/privacy/",
+    "/terms/"
   ]
 }
 

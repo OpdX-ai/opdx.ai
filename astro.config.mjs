@@ -4,7 +4,11 @@ import react from '@astrojs/react';
 
 export default defineConfig({
   output: 'hybrid',
-  adapter: cloudflare(),
+  adapter: cloudflare({
+    platformProxy: {
+      enabled: true,
+    },
+  }),
   integrations: [react()],
   vite: {
     build: {

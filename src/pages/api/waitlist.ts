@@ -1,10 +1,15 @@
 /**
  * Waitlist API endpoint (Astro API route - works in dev and production)
  * Handles email submissions with Turnstile verification and KV storage
+ * 
+ * CRITICAL: This file MUST be a .ts file (not .astro) for Astro to treat it as an API route
  */
 
 import type { APIRoute } from 'astro';
 import { isValidEmail, sanitizeEmail, hashString } from '../../lib/validators';
+
+// Force this route to be SSR (not prerendered)
+export const prerender = false;
 
 // Security headers for all responses
 function getSecurityHeaders(): Record<string, string> {
