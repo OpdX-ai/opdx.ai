@@ -1,6 +1,8 @@
 /**
  * Waitlist API endpoint - Cloudflare Pages Function
  * This takes precedence over Astro API routes for Cloudflare Pages
+ * 
+ * IMPORTANT: This is the PRODUCTION endpoint used on Cloudflare Pages
  */
 
 // Types are available via @cloudflare/workers-types in Cloudflare runtime
@@ -62,21 +64,26 @@ function getSecurityHeaders(includeCors = false): Record<string, string> {
   return headers;
 }
 
-export const onRequest = async (context: PagesFunctionContext) => {
-  // Debug logging (remove in production if needed)
+// Main handler - this is what Cloudflare Pages calls
+export async function onRequest(context: PagesFunctionContext): Promise<Response> {
+  console.log('=== CLOUDFLARE FUNCTION CALLED ===');
+  
+  // Debug logging
   const method = context.request.method;
   const url = context.request.url;
   const pathname = new URL(url).pathname;
   
-  console.log('Waitlist API called:', {
+  console.log('Waitlist API called (Cloudflare Function):', {
     method,
     url,
     pathname,
     userAgent: context.request.headers.get('user-agent'),
+    contentType: context.request.headers.get('content-type'),
   });
 
   // Handle OPTIONS for CORS preflight
   if (method === 'OPTIONS') {
+    console.log('Handling OPTIONS request');
     return new Response(null, {
       status: 204,
       headers: {
@@ -90,6 +97,7 @@ export const onRequest = async (context: PagesFunctionContext) => {
 
   // Handle HEAD requests (health checks from monitoring services)
   if (method === 'HEAD') {
+    console.log('Handling HEAD request');
     return new Response(null, {
       status: 200,
       headers: getSecurityHeaders(),
@@ -117,6 +125,7 @@ export const onRequest = async (context: PagesFunctionContext) => {
   // Validate Content-Type
   const contentType = context.request.headers.get('content-type');
   if (!contentType || !contentType.includes('application/json')) {
+    console.log('Invalid content type:', contentType);
     return new Response(JSON.stringify({ error: 'Invalid content type' }), {
       status: 415,
       headers: getSecurityHeaders(),
@@ -128,7 +137,9 @@ export const onRequest = async (context: PagesFunctionContext) => {
     let body;
     try {
       body = await context.request.json();
+      console.log('Parsed request body successfully');
     } catch (parseError) {
+      console.error('JSON parse error:', parseError);
       return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), {
         status: 400,
         headers: getSecurityHeaders(),
@@ -239,6 +250,7 @@ export const onRequest = async (context: PagesFunctionContext) => {
     if (context.env.OPDX_WAITLIST) {
       const existing = await context.env.OPDX_WAITLIST.get(`email:${sanitizedEmail}`);
       if (existing) {
+        console.log('Email already subscribed:', sanitizedEmail);
         return new Response(JSON.stringify({ message: 'Already subscribed', duplicate: true }), {
           status: 200,
           headers: getSecurityHeaders(),
@@ -256,6 +268,7 @@ export const onRequest = async (context: PagesFunctionContext) => {
       };
 
       await context.env.OPDX_WAITLIST.put(`email:${sanitizedEmail}`, JSON.stringify(entry));
+      console.log('Email stored successfully:', sanitizedEmail);
     } else {
       console.warn('KV namespace not available');
     }
@@ -270,10 +283,11 @@ export const onRequest = async (context: PagesFunctionContext) => {
           body: JSON.stringify({ email: sanitizedEmail, timestamp: Date.now() }),
         });
       } catch (err) {
-        console.error('Webhook error:', err);
+        console.error('Webhook error:', err instanceof Error ? err.message : 'Unknown error');
       }
     }
 
+    console.log('Returning success response');
     return new Response(JSON.stringify({ message: 'Success' }), {
       status: 200,
       headers: getSecurityHeaders(),
@@ -285,5 +299,4 @@ export const onRequest = async (context: PagesFunctionContext) => {
       headers: getSecurityHeaders(),
     });
   }
-};
-
+}
