@@ -64,14 +64,19 @@ function getSecurityHeaders(includeCors = false): Record<string, string> {
 
 export const onRequest = async (context: PagesFunctionContext) => {
   // Debug logging (remove in production if needed)
+  const method = context.request.method;
+  const url = context.request.url;
+  const pathname = new URL(url).pathname;
+  
   console.log('Waitlist API called:', {
-    method: context.request.method,
-    url: context.request.url,
-    pathname: new URL(context.request.url).pathname,
+    method,
+    url,
+    pathname,
+    userAgent: context.request.headers.get('user-agent'),
   });
 
   // Handle OPTIONS for CORS preflight
-  if (context.request.method === 'OPTIONS') {
+  if (method === 'OPTIONS') {
     return new Response(null, {
       status: 204,
       headers: {
@@ -83,14 +88,26 @@ export const onRequest = async (context: PagesFunctionContext) => {
     });
   }
 
+  // Handle HEAD requests (health checks from monitoring services)
+  if (method === 'HEAD') {
+    return new Response(null, {
+      status: 200,
+      headers: getSecurityHeaders(),
+    });
+  }
+
   // Only handle POST requests
-  if (context.request.method !== 'POST') {
-    console.log('Rejected method:', context.request.method);
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+  if (method !== 'POST') {
+    console.log('Rejected method:', method, '- Only POST, OPTIONS, HEAD allowed');
+    return new Response(JSON.stringify({ 
+      error: 'Method not allowed',
+      allowed: ['POST', 'OPTIONS', 'HEAD'],
+      received: method,
+    }), {
       status: 405,
       headers: { 
         ...getSecurityHeaders(),
-        'Allow': 'POST, OPTIONS'
+        'Allow': 'POST, OPTIONS, HEAD'
       },
     });
   }

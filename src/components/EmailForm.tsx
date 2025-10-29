@@ -236,7 +236,7 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
   }
 
   return (
-    <form className="email-form" onSubmit={handleSubmit} noValidate>
+    <form className="email-form" onSubmit={handleSubmit} method="POST" action="/api/waitlist" noValidate>
       <div className="form-group">
         <label htmlFor="email" className="sr-only">
           Email address
