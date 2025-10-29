@@ -117,10 +117,28 @@ export default function EmailForm({ turnstileSiteKey, primaryCta, successMessage
     }
   };
 
+  const handleReset = () => {
+    setStatus('idle');
+    setEmail('');
+    setErrorMessage('');
+    setTurnstileToken(null);
+    if (widgetId && window.turnstile) {
+      window.turnstile.reset(widgetId);
+    }
+  };
+
   if (status === 'success') {
     return (
       <div className="form-success" role="status" aria-live="polite">
         <p className="success-message">{successMessage}</p>
+        <button
+          type="button"
+          className="form-reset-button"
+          onClick={handleReset}
+          aria-label="Submit another email"
+        >
+          Submit another email
+        </button>
       </div>
     );
   }

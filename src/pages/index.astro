@@ -48,9 +48,6 @@ const content = CONFIG.content;
               primaryCta={content.hero.primaryCta}
               successMessage={CONFIG.ctaSuccess}
             />
-            <a href={`mailto:${content.footer.contact}?subject=Demo Request`} class="cta-secondary">
-              {content.hero.secondaryCta}
-            </a>
             {content.hero.microCopy && content.hero.microCopy.length > 0 && (
               <div class="hero-microcopy">
                 {content.hero.microCopy.map((line) => (

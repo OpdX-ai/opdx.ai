@@ -5,14 +5,20 @@ interface Props {
 
 const { screenshots = [] } = Astro.props;
 
+// Helper function to create placeholder SVG
+function createPlaceholderSVG(text: string): string {
+  const svg = `<svg width="400" height="300" xmlns="http://www.w3.org/2000/svg"><rect width="400" height="300" fill="#F7FAFF"/><text x="50%" y="50%" font-family="Arial, sans-serif" font-size="20" fill="#64748B" text-anchor="middle" dominant-baseline="middle">${text}</text></svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
 // Placeholder images for MVP - can be replaced with actual screenshots
-// Using data URIs for now - replace with actual image paths later
 const defaultScreenshots = [
-  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5DYWxlbmRhciAmIFF1ZXVlPC90ZXh0Pjwvc3ZnPg==', alt: 'Calendar and Queue view' },
-  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5WaXNpdCBTaGVldDwvdGV4dD48L3N2Zz4=', alt: 'Visit Sheet' },
-  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5SeCBQREY8L3RleHQ+PC9zdmc+', alt: 'Prescription PDF' },
-  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5VUEkgUGF5bWVudDwvdGV4dD48L3N2Zz4=', alt: 'UPI payment flow' },
-  { src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iI0Y3RkFGRiIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiM2NDc0OEIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5XaGF0c0FwcCBSZW1pbmRlcjwvdGV4dD48L3N2Zz4=', alt: 'WhatsApp reminder preview' },
+  { src: createPlaceholderSVG('Queue Management'), alt: 'Queue Management System' },
+  { src: createPlaceholderSVG('Visit Sheet'), alt: 'Visit Sheet' },
+  { src: createPlaceholderSVG('Rx PDF'), alt: 'Prescription PDF' },
+  { src: createPlaceholderSVG('UPI Payment'), alt: 'UPI payment flow' },
+  { src: createPlaceholderSVG('WhatsApp Reminder'), alt: 'WhatsApp reminder preview' },
+  { src: createPlaceholderSVG('AI Voice Booking'), alt: 'AI-powered voice appointment booking' },
 ];
 
 const images = screenshots.length > 0 ? screenshots : defaultScreenshots;
