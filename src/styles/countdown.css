@@ -31,7 +31,6 @@
   color: var(--color-primary);
   line-height: 1;
   margin-bottom: 0.5rem;
-  text-shadow: 0 0 20px rgba(59, 154, 225, 0.3);
 }
 
 .countdown-unit {

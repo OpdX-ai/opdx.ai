@@ -11,11 +11,15 @@
   width: 100%;
   padding: 1rem 1.25rem;
   font-size: 1rem;
-  background-color: var(--color-neutral-dark);
-  border: 2px solid rgba(234, 240, 255, 0.1);
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-border);
   border-radius: 8px;
   color: var(--color-text);
   transition: border-color var(--transition-fast);
+}
+
+.form-input:hover {
+  border-color: var(--color-neutral-light);
 }
 
 .form-input::placeholder {
@@ -25,7 +29,7 @@
 .form-input:focus-visible {
   border-color: var(--color-primary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(59, 154, 225, 0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .form-input:disabled {
@@ -65,13 +69,13 @@
   border-radius: 8px;
   transition: all var(--transition-fast);
   margin-top: 1rem;
-  box-shadow: 0 4px 12px rgba(59, 154, 225, 0.2);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
 }
 
 .form-submit:hover:not(:disabled) {
-  background: linear-gradient(135deg, #2B8ACF 0%, #4F94F0 100%);
+  background: linear-gradient(135deg, #1D4ED8 0%, #2563EB 100%);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(59, 154, 225, 0.3);
+  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
 .form-submit:active:not(:disabled) {
@@ -79,14 +83,14 @@
 }
 
 .form-submit:disabled {
-  background-color: rgba(76, 125, 255, 0.5);
+  background-color: rgba(37, 99, 235, 0.5);
   cursor: not-allowed;
 }
 
 .form-success {
   padding: 2rem;
   text-align: center;
-  background-color: rgba(16, 185, 129, 0.1);
+  background-color: rgba(16, 185, 129, 0.05);
   border: 2px solid var(--color-success);
   border-radius: 8px;
   box-shadow: 0 0 20px rgba(16, 185, 129, 0.1);
