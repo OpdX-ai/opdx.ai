@@ -54,16 +54,39 @@ function getSecurityHeaders(): Record<string, string> {
 }
 
 export const onRequest = async (context: PagesFunctionContext) => {
+  // Debug logging (remove in production if needed)
+  console.log('Waitlist API called:', {
+    method: context.request.method,
+    url: context.request.url,
+    pathname: new URL(context.request.url).pathname,
+  });
+
+  // Handle OPTIONS for CORS preflight
+  if (context.request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Max-Age': '86400',
+      },
+    });
+  }
+
   // Only handle POST requests
   if (context.request.method !== 'POST') {
+    console.log('Rejected method:', context.request.method);
     return new Response(JSON.stringify({ error: 'Method not allowed' }), {
       status: 405,
       headers: { 
         ...getSecurityHeaders(),
-        'Allow': 'POST'
+        'Allow': 'POST, OPTIONS'
       },
     });
   }
+
+  console.log('Processing POST request to waitlist API');
 
   // Validate Content-Type
   const contentType = context.request.headers.get('content-type');
